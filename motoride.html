@@ -1,0 +1,2999 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MOTOIQ — Not the fastest route. The best ride.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #07080D;
+  --bg2: #0D0F1A;
+  --surface: rgba(255,255,255,0.04);
+  --surface2: rgba(255,255,255,0.08);
+  --border: rgba(255,255,255,0.08);
+  --orange: #FF5C1A;
+  --orange2: #FF8C42;
+  --cyan: #00D4FF;
+  --cyan2: #00FFD4;
+  --text: #F0F0F0;
+  --text2: #8A8FA8;
+  --green: #00FF88;
+  --red: #FF3D3D;
+  --yellow: #FFD600;
+  --glass: rgba(13,15,26,0.7);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  background: rgba(7,8,13,0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  height: 64px;
+  gap: 0.5rem;
+}
+
+.nav-logo {
+  font-family: 'Exo 2', sans-serif;
+  font-weight: 900;
+  font-size: 1.4rem;
+  color: var(--orange);
+  letter-spacing: 2px;
+  margin-right: 1.5rem;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.nav-logo span { color: var(--cyan); }
+
+.nav-links {
+  display: flex;
+  gap: 0.1rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  flex: 1;
+}
+.nav-links::-webkit-scrollbar { display: none; }
+
+.nav-link {
+  font-size: 0.75rem;
+  font-family: 'Exo 2', sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  padding: 0.4rem 0.7rem;
+  border-radius: 6px;
+  cursor: pointer;
+  color: var(--text2);
+  transition: all 0.2s;
+  white-space: nowrap;
+  border: 1px solid transparent;
+}
+.nav-link:hover, .nav-link.active {
+  color: var(--cyan);
+  background: rgba(0,212,255,0.08);
+  border-color: rgba(0,212,255,0.2);
+}
+
+.nav-cta {
+  margin-left: auto;
+  background: linear-gradient(135deg, var(--orange), #FF8C42);
+  color: #000;
+  font-family: 'Exo 2', sans-serif;
+  font-weight: 700;
+  font-size: 0.75rem;
+  padding: 0.5rem 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  white-space: nowrap;
+  letter-spacing: 1px;
+  border: none;
+  transition: opacity 0.2s;
+}
+.nav-cta:hover { opacity: 0.85; }
+
+/* ── PAGES ── */
+.page { display: none; padding-top: 64px; min-height: 100vh; }
+.page.active { display: block; animation: fadeIn 0.4s ease; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── HERO ── */
+.hero {
+  position: relative;
+  min-height: calc(100vh - 64px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  overflow: hidden;
+  padding: 4rem 2rem;
+}
+
+.hero-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,92,26,0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,92,26,0.06) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 50%, black, transparent);
+}
+
+.hero-glow {
+  position: absolute;
+  width: 700px; height: 400px;
+  background: radial-gradient(ellipse, rgba(255,92,26,0.15) 0%, transparent 70%);
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.hero-glow2 {
+  position: absolute;
+  width: 500px; height: 300px;
+  background: radial-gradient(ellipse, rgba(0,212,255,0.1) 0%, transparent 70%);
+  top: 30%; left: 20%;
+  pointer-events: none;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255,92,26,0.1);
+  border: 1px solid rgba(255,92,26,0.3);
+  padding: 0.4rem 1rem;
+  border-radius: 100px;
+  font-size: 0.75rem;
+  font-family: 'Exo 2', sans-serif;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--orange2);
+  margin-bottom: 2rem;
+  position: relative;
+}
+
+.pulse-dot {
+  width: 8px; height: 8px;
+  background: var(--green);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(0,255,136,0.4); }
+  50% { box-shadow: 0 0 0 6px rgba(0,255,136,0); }
+}
+
+.hero h1 {
+  font-family: 'Exo 2', sans-serif;
+  font-size: clamp(2.5rem, 7vw, 5.5rem);
+  font-weight: 900;
+  line-height: 1.05;
+  position: relative;
+  margin-bottom: 1rem;
+}
+.hero h1 .line1 { color: var(--text); }
+.hero h1 .line2 {
+  background: linear-gradient(135deg, var(--orange), var(--orange2), var(--cyan));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-sub {
+  color: var(--text2);
+  font-size: 1.1rem;
+  max-width: 500px;
+  margin: 0 auto 2.5rem;
+  line-height: 1.6;
+  position: relative;
+}
+
+.hero-btns {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  position: relative;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--orange), var(--orange2));
+  color: #000;
+  font-family: 'Exo 2', sans-serif;
+  font-weight: 700;
+  padding: 0.9rem 2rem;
+  border-radius: 12px;
+  cursor: pointer;
+  border: none;
+  font-size: 0.9rem;
+  letter-spacing: 1px;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 0 30px rgba(255,92,26,0.3);
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 40px rgba(255,92,26,0.5);
+}
+
+.btn-ghost {
+  background: var(--surface);
+  color: var(--cyan);
+  font-family: 'Exo 2', sans-serif;
+  font-weight: 700;
+  padding: 0.9rem 2rem;
+  border-radius: 12px;
+  cursor: pointer;
+  border: 1px solid rgba(0,212,255,0.3);
+  font-size: 0.9rem;
+  letter-spacing: 1px;
+  transition: all 0.2s;
+}
+.btn-ghost:hover {
+  background: rgba(0,212,255,0.1);
+  border-color: var(--cyan);
+}
+
+/* Road animation */
+.road-visual {
+  position: relative;
+  width: 100%;
+  max-width: 700px;
+  height: 160px;
+  margin: 3rem auto 0;
+}
+
+.road-svg { width: 100%; height: 100%; }
+
+.road-line {
+  stroke-dasharray: 600;
+  stroke-dashoffset: 600;
+  animation: drawRoad 2s ease forwards 0.5s;
+}
+@keyframes drawRoad {
+  to { stroke-dashoffset: 0; }
+}
+
+.moto-dot {
+  animation: moveOnRoad 3s ease-in-out infinite 2.5s;
+}
+@keyframes moveOnRoad {
+  0% { transform: translateX(0); }
+  50% { transform: translateX(200px); }
+  100% { transform: translateX(0); }
+}
+
+/* ── SECTION STYLES ── */
+.section { padding: 5rem 2rem; max-width: 1200px; margin: 0 auto; }
+.section-sm { padding: 3rem 2rem; max-width: 1200px; margin: 0 auto; }
+
+.section-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 3px;
+  color: var(--orange);
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
+}
+
+.section-title {
+  font-family: 'Exo 2', sans-serif;
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  font-weight: 800;
+  line-height: 1.1;
+  margin-bottom: 1rem;
+}
+
+.section-sub {
+  color: var(--text2);
+  font-size: 1rem;
+  max-width: 500px;
+  line-height: 1.6;
+}
+
+/* ── GLASS CARD ── */
+.glass-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.5rem;
+  backdrop-filter: blur(10px);
+  transition: border-color 0.2s, background 0.2s;
+}
+.glass-card:hover {
+  border-color: rgba(255,92,26,0.3);
+  background: var(--surface2);
+}
+
+/* ── GRID LAYOUTS ── */
+.grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+.grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 1.5rem; }
+.grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.2rem; }
+
+/* ── FEATURE ICON ── */
+.feat-icon {
+  width: 48px; height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  margin-bottom: 1rem;
+}
+
+.feat-title {
+  font-family: 'Exo 2', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.feat-desc { color: var(--text2); font-size: 0.875rem; line-height: 1.6; }
+
+/* ── DIVIDER ── */
+.divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 3rem 0;
+}
+
+/* ── BADGES ── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.8rem;
+  border-radius: 100px;
+  font-size: 0.7rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+.badge-orange { background: rgba(255,92,26,0.15); color: var(--orange2); border: 1px solid rgba(255,92,26,0.3); }
+.badge-cyan { background: rgba(0,212,255,0.1); color: var(--cyan); border: 1px solid rgba(0,212,255,0.25); }
+.badge-green { background: rgba(0,255,136,0.1); color: var(--green); border: 1px solid rgba(0,255,136,0.25); }
+.badge-red { background: rgba(255,61,61,0.1); color: var(--red); border: 1px solid rgba(255,61,61,0.25); }
+.badge-yellow { background: rgba(255,214,0,0.1); color: var(--yellow); border: 1px solid rgba(255,214,0,0.25); }
+
+/* ── JSON BLOCK ── */
+.json-block {
+  background: #080C14;
+  border: 1px solid rgba(0,212,255,0.2);
+  border-radius: 12px;
+  padding: 1.2rem 1.5rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  color: #8BCDDD;
+  line-height: 1.8;
+  overflow-x: auto;
+}
+.json-key { color: var(--cyan); }
+.json-string { color: #A5D6B7; }
+.json-num { color: var(--orange2); }
+.json-bool { color: #B8A5FF; }
+.json-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 2px;
+  color: rgba(0,212,255,0.5);
+  margin-bottom: 0.5rem;
+}
+
+/* ── MAP MOCK ── */
+.map-container {
+  background: #0A1628;
+  border: 1px solid rgba(0,212,255,0.2);
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+  height: 380px;
+}
+
+.map-overlay-info {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background: var(--glass);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  backdrop-filter: blur(10px);
+  font-size: 0.8rem;
+}
+
+.map-overlay-right {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.map-btn {
+  background: var(--glass);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.75rem;
+  font-family: 'Exo 2', sans-serif;
+  font-weight: 700;
+  cursor: pointer;
+  color: var(--text);
+  backdrop-filter: blur(10px);
+  letter-spacing: 0.5px;
+  transition: all 0.2s;
+}
+.map-btn:hover, .map-btn.active { background: rgba(255,92,26,0.2); border-color: var(--orange); color: var(--orange2); }
+
+/* ── STATS ── */
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.stat-num {
+  font-family: 'Exo 2', sans-serif;
+  font-weight: 900;
+  font-size: 2.5rem;
+  background: linear-gradient(135deg, var(--orange), var(--cyan));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.stat-label { color: var(--text2); font-size: 0.8rem; margin-top: 0.3rem; }
+
+/* ── ALERT ITEM ── */
+.alert-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: 12px;
+  border-left: 3px solid;
+  margin-bottom: 0.75rem;
+}
+.alert-item.danger { border-color: var(--red); background: rgba(255,61,61,0.06); }
+.alert-item.warning { border-color: var(--yellow); background: rgba(255,214,0,0.06); }
+.alert-item.info { border-color: var(--cyan); background: rgba(0,212,255,0.06); }
+.alert-item.success { border-color: var(--green); background: rgba(0,255,136,0.06); }
+
+.alert-icon { font-size: 1.4rem; }
+.alert-title { font-family: 'Exo 2', sans-serif; font-weight: 700; font-size: 0.9rem; margin-bottom: 0.2rem; }
+.alert-desc { color: var(--text2); font-size: 0.8rem; }
+
+/* ── MECHANIC CARD ── */
+.mechanic-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin-bottom: 0.75rem;
+  transition: all 0.2s;
+}
+.mechanic-card:hover { border-color: rgba(255,92,26,0.3); }
+
+.mechanic-avatar {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--orange), var(--cyan));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.mechanic-info { flex: 1; }
+.mechanic-name { font-family: 'Exo 2', sans-serif; font-weight: 700; font-size: 0.9rem; }
+.mechanic-meta { color: var(--text2); font-size: 0.75rem; margin-top: 0.2rem; display: flex; gap: 0.75rem; }
+
+.stars { color: var(--yellow); font-size: 0.75rem; }
+
+.btn-sm {
+  background: rgba(255,92,26,0.15);
+  border: 1px solid rgba(255,92,26,0.3);
+  color: var(--orange2);
+  padding: 0.4rem 0.9rem;
+  border-radius: 8px;
+  font-family: 'Exo 2', sans-serif;
+  font-weight: 700;
+  font-size: 0.75rem;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.btn-sm:hover { background: rgba(255,92,26,0.3); border-color: var(--orange); }
+
+.btn-cyan-sm {
+  background: rgba(0,212,255,0.1);
+  border: 1px solid rgba(0,212,255,0.3);
+  color: var(--cyan);
+  padding: 0.4rem 0.9rem;
+  border-radius: 8px;
+  font-family: 'Exo 2', sans-serif;
+  font-weight: 700;
+  font-size: 0.75rem;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  transition: all 0.2s;
+}
+.btn-cyan-sm:hover { background: rgba(0,212,255,0.2); }
+
+/* ── WEATHER WIDGET ── */
+.weather-main {
+  background: linear-gradient(135deg, rgba(0,212,255,0.1), rgba(255,92,26,0.05));
+  border: 1px solid rgba(0,212,255,0.2);
+  border-radius: 20px;
+  padding: 2rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.weather-temp {
+  font-family: 'Exo 2', sans-serif;
+  font-weight: 900;
+  font-size: 5rem;
+  line-height: 1;
+  color: var(--text);
+}
+.weather-city {
+  font-family: 'Exo 2', sans-serif;
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: var(--cyan);
+  margin-top: 0.5rem;
+}
+.weather-desc { color: var(--text2); font-size: 0.9rem; margin-top: 0.3rem; }
+
+.weather-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+.weather-item {
+  background: rgba(0,0,0,0.3);
+  border-radius: 10px;
+  padding: 0.75rem;
+  font-size: 0.8rem;
+}
+.weather-item-val { font-family: 'Exo 2', sans-serif; font-weight: 700; color: var(--cyan); font-size: 1rem; }
+.weather-item-lbl { color: var(--text2); font-size: 0.7rem; margin-top: 0.2rem; }
+
+/* ── AI CHAT ── */
+.chat-container {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  height: 460px;
+  display: flex;
+  flex-direction: column;
+}
+.chat-header {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: rgba(255,92,26,0.05);
+}
+.chat-avatar {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--orange), var(--orange2));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+}
+.chat-name { font-family: 'Exo 2', sans-serif; font-weight: 700; font-size: 0.9rem; }
+.chat-status { font-size: 0.7rem; color: var(--green); display: flex; align-items: center; gap: 0.3rem; }
+
+.chat-messages {
+  flex: 1;
+  padding: 1.25rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.chat-messages::-webkit-scrollbar { width: 4px; }
+.chat-messages::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+
+.msg {
+  max-width: 80%;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+.msg-ai {
+  background: rgba(255,92,26,0.12);
+  border: 1px solid rgba(255,92,26,0.2);
+  color: var(--text);
+  align-self: flex-start;
+  border-radius: 4px 12px 12px 12px;
+}
+.msg-user {
+  background: rgba(0,212,255,0.1);
+  border: 1px solid rgba(0,212,255,0.2);
+  color: var(--text);
+  align-self: flex-end;
+  border-radius: 12px 4px 12px 12px;
+}
+
+.chat-input-row {
+  padding: 1rem;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 0.75rem;
+}
+.chat-input {
+  flex: 1;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.85rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.chat-input:focus { border-color: rgba(255,92,26,0.4); }
+.chat-input::placeholder { color: var(--text2); }
+.chat-send {
+  background: linear-gradient(135deg, var(--orange), var(--orange2));
+  border: none;
+  border-radius: 10px;
+  width: 42px; height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #000;
+  font-size: 1rem;
+  transition: opacity 0.2s;
+  flex-shrink: 0;
+}
+.chat-send:hover { opacity: 0.8; }
+
+/* ── TYPING INDICATOR ── */
+.typing { display: flex; gap: 4px; align-items: center; padding: 0.75rem 1rem; }
+.typing span {
+  width: 6px; height: 6px;
+  background: var(--orange);
+  border-radius: 50%;
+  animation: bounce 1.2s infinite;
+}
+.typing span:nth-child(2) { animation-delay: 0.2s; }
+.typing span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes bounce {
+  0%,60%,100% { transform: translateY(0); }
+  30% { transform: translateY(-8px); }
+}
+
+/* ── DIGILOCKER ── */
+.digilock-flow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.dl-step {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  max-width: 500px;
+}
+.dl-step-num {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--orange), var(--orange2));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Exo 2', sans-serif;
+  font-weight: 700;
+  color: #000;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+.dl-step-info { font-size: 0.9rem; }
+.dl-step-title { font-family: 'Exo 2', sans-serif; font-weight: 700; }
+.dl-step-desc { color: var(--text2); font-size: 0.8rem; margin-top: 0.2rem; }
+
+.doc-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition: all 0.2s;
+}
+.doc-card:hover { border-color: rgba(0,212,255,0.4); }
+.doc-card-icon {
+  width: 48px; height: 48px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(0,212,255,0.15), rgba(0,212,255,0.05));
+  border: 1px solid rgba(0,212,255,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
+.doc-card-info { flex: 1; }
+.doc-card-name { font-family: 'Exo 2', sans-serif; font-weight: 700; font-size: 0.9rem; }
+.doc-card-meta { color: var(--text2); font-size: 0.75rem; margin-top: 0.2rem; }
+.doc-card-status { font-size: 0.7rem; }
+
+/* ── ARCH DIAGRAM ── */
+.arch-flow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin: 2rem 0;
+}
+.arch-node {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  text-align: center;
+  font-family: 'Exo 2', sans-serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+  min-width: 120px;
+}
+.arch-node.highlight-orange { border-color: rgba(255,92,26,0.5); background: rgba(255,92,26,0.08); }
+.arch-node.highlight-cyan { border-color: rgba(0,212,255,0.5); background: rgba(0,212,255,0.08); }
+.arch-node.highlight-green { border-color: rgba(0,255,136,0.4); background: rgba(0,255,136,0.06); }
+.arch-arrow { font-size: 1.5rem; color: var(--text2); }
+.arch-node-label { color: var(--text2); font-size: 0.65rem; font-weight: 400; margin-top: 0.25rem; font-family: 'DM Sans', sans-serif; }
+
+/* ── PRICING ── */
+.price-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 2rem;
+  position: relative;
+  transition: all 0.3s;
+}
+.price-card:hover { transform: translateY(-4px); }
+.price-card.featured {
+  border-color: rgba(255,92,26,0.5);
+  background: linear-gradient(135deg, rgba(255,92,26,0.08), rgba(0,212,255,0.05));
+}
+.price-featured-badge {
+  position: absolute;
+  top: -14px; left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, var(--orange), var(--orange2));
+  color: #000;
+  font-family: 'Exo 2', sans-serif;
+  font-weight: 700;
+  font-size: 0.7rem;
+  letter-spacing: 2px;
+  padding: 0.3rem 1rem;
+  border-radius: 100px;
+}
+.price-plan { font-family: 'Exo 2', sans-serif; font-weight: 700; font-size: 1rem; margin-bottom: 0.5rem; color: var(--text2); letter-spacing: 1px; }
+.price-amount { font-family: 'Exo 2', sans-serif; font-weight: 900; font-size: 3rem; margin-bottom: 0.25rem; }
+.price-amount span { font-size: 1.2rem; color: var(--text2); }
+.price-period { color: var(--text2); font-size: 0.8rem; margin-bottom: 1.5rem; }
+.price-feature { display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem 0; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+.price-feature:last-of-type { border: none; }
+.price-feature-icon { color: var(--green); font-size: 0.8rem; }
+.price-feature-x { color: var(--text2); font-size: 0.8rem; }
+
+/* ── GROUP RIDER MAP ── */
+.rider-dot {
+  position: absolute;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  border: 2px solid #000;
+}
+.rider-dot::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  opacity: 0.3;
+  animation: ping 2s infinite;
+}
+@keyframes ping {
+  0% { transform: scale(1); opacity: 0.3; }
+  100% { transform: scale(2.5); opacity: 0; }
+}
+
+/* ── GAMIFICATION BADGES ── */
+.badge-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  margin: 2rem 0;
+}
+.gam-badge {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.25rem;
+  text-align: center;
+  min-width: 120px;
+  transition: all 0.2s;
+}
+.gam-badge:hover { transform: translateY(-3px); border-color: rgba(255,92,26,0.4); }
+.gam-badge-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+.gam-badge-name { font-family: 'Exo 2', sans-serif; font-weight: 700; font-size: 0.8rem; color: var(--orange2); }
+.gam-badge-desc { color: var(--text2); font-size: 0.7rem; margin-top: 0.25rem; }
+
+/* ── FUEL CARD ── */
+.fuel-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1.25rem;
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition: all 0.2s;
+}
+.fuel-card:hover { border-color: rgba(0,212,255,0.3); }
+.fuel-icon {
+  width: 44px; height: 44px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
+.fuel-name { font-family: 'Exo 2', sans-serif; font-weight: 700; font-size: 0.9rem; }
+.fuel-meta { color: var(--text2); font-size: 0.75rem; margin-top: 0.2rem; }
+.fuel-price { font-family: 'Exo 2', sans-serif; font-weight: 700; font-size: 1rem; color: var(--green); margin-left: auto; text-align: right; }
+.fuel-price-sub { color: var(--text2); font-size: 0.7rem; margin-top: 0.2rem; }
+
+/* ── TOAST NOTIFICATION ── */
+#toast {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  background: var(--surface2);
+  border: 1px solid rgba(0,255,136,0.4);
+  border-radius: 14px;
+  padding: 1rem 1.5rem;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  transform: translateY(100px);
+  opacity: 0;
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 9999;
+  max-width: 320px;
+  backdrop-filter: blur(20px);
+}
+#toast.show { transform: translateY(0); opacity: 1; }
+#toast-icon { font-size: 1.2rem; }
+
+/* ── LOADING SCREEN ── */
+#loading {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  z-index: 99999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  transition: opacity 0.5s, transform 0.5s;
+}
+
+.loading-logo {
+  font-family: 'Exo 2', sans-serif;
+  font-weight: 900;
+  font-size: 2.5rem;
+  letter-spacing: 4px;
+  color: var(--orange);
+}
+.loading-logo span { color: var(--cyan); }
+
+.loading-bar-wrap {
+  width: 200px;
+  height: 3px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.loading-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--orange), var(--cyan));
+  border-radius: 3px;
+  animation: loadBar 1.5s ease forwards;
+}
+@keyframes loadBar {
+  from { width: 0%; }
+  to { width: 100%; }
+}
+.loading-text {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 3px;
+  color: var(--text2);
+  animation: loadingText 1.5s steps(1) infinite;
+}
+@keyframes loadingText {
+  0% { content: "INITIALIZING..."; }
+}
+
+/* ── PROGRESS RING ── */
+.progress-ring {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+  margin: 1.5rem 0;
+}
+.ring-wrap { text-align: center; }
+.ring-label { font-family: 'Exo 2', sans-serif; font-weight: 700; font-size: 0.8rem; color: var(--text2); margin-top: 0.5rem; }
+
+/* ── CONNECT PAGE ── */
+.social-link {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin-bottom: 0.75rem;
+  text-decoration: none;
+  color: var(--text);
+  transition: all 0.2s;
+  cursor: pointer;
+}
+.social-link:hover { border-color: rgba(255,92,26,0.4); background: var(--surface2); }
+.social-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+
+/* ── HERO STATS BAR ── */
+.stats-bar {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 4rem;
+  padding: 1.5rem 2rem;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.stats-bar-item { text-align: center; }
+.stats-bar-num { font-family: 'Exo 2', sans-serif; font-weight: 900; font-size: 1.5rem; color: var(--orange); }
+.stats-bar-lbl { color: var(--text2); font-size: 0.75rem; margin-top: 0.2rem; }
+
+/* ── HOW IT WORKS ── */
+.step-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  position: relative;
+}
+.step-row::before {
+  content: '';
+  position: absolute;
+  top: 28px;
+  left: 5%;
+  right: 5%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--orange), transparent);
+  z-index: 0;
+}
+.step-item {
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+.step-num {
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  border: 2px solid var(--orange);
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Exo 2', sans-serif;
+  font-weight: 900;
+  font-size: 1.2rem;
+  color: var(--orange);
+  margin: 0 auto 1rem;
+}
+.step-title { font-family: 'Exo 2', sans-serif; font-weight: 700; margin-bottom: 0.5rem; }
+.step-desc { color: var(--text2); font-size: 0.8rem; line-height: 1.6; }
+
+/* ── ENDPOINT TABLE ── */
+.endpoint-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  border: 1px solid var(--border);
+  margin-bottom: 0.5rem;
+  background: var(--surface);
+  transition: all 0.2s;
+}
+.endpoint-row:hover { border-color: rgba(0,212,255,0.3); }
+.method-badge {
+  padding: 0.2rem 0.6rem;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.7rem;
+  flex-shrink: 0;
+}
+.method-get { background: rgba(0,255,136,0.15); color: var(--green); }
+.method-post { background: rgba(255,92,26,0.15); color: var(--orange2); }
+.endpoint-path { color: var(--cyan); flex: 1; }
+.endpoint-desc { color: var(--text2); font-family: 'DM Sans', sans-serif; font-size: 0.78rem; }
+
+/* ── RIDE HISTORY ── */
+.ride-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  margin-bottom: 0.75rem;
+  transition: all 0.2s;
+}
+.ride-row:hover { border-color: rgba(255,92,26,0.3); }
+.ride-map-thumb {
+  width: 60px; height: 44px;
+  border-radius: 8px;
+  background: #0A1628;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+}
+.ride-info { flex: 1; }
+.ride-title { font-family: 'Exo 2', sans-serif; font-weight: 700; font-size: 0.9rem; }
+.ride-meta { color: var(--text2); font-size: 0.75rem; margin-top: 0.2rem; }
+.ride-stats { display: flex; gap: 1rem; margin-top: 0.5rem; }
+.ride-stat { font-size: 0.75rem; color: var(--cyan); font-family: 'JetBrains Mono', monospace; }
+
+/* ── CONTACT FORM ── */
+.form-group { margin-bottom: 1.25rem; }
+.form-label { font-family: 'Exo 2', sans-serif; font-weight: 600; font-size: 0.8rem; letter-spacing: 1px; color: var(--text2); margin-bottom: 0.5rem; display: block; }
+.form-input {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.form-input:focus { border-color: rgba(255,92,26,0.5); }
+.form-input::placeholder { color: var(--text2); }
+textarea.form-input { resize: vertical; min-height: 120px; }
+
+/* ── PAGE HEADER ── */
+.page-header {
+  padding: 4rem 2rem 2rem;
+  background: linear-gradient(180deg, rgba(255,92,26,0.06) 0%, transparent 100%);
+  border-bottom: 1px solid var(--border);
+  text-align: center;
+}
+
+/* ── MISC ── */
+.flex-center { display: flex; align-items: center; justify-content: center; }
+.gap-1 { gap: 1rem; }
+.mt-1 { margin-top: 1rem; }
+.mt-2 { margin-top: 2rem; }
+.mb-1 { margin-bottom: 1rem; }
+.text-orange { color: var(--orange); }
+.text-cyan { color: var(--cyan); }
+.text-green { color: var(--green); }
+.text-muted { color: var(--text2); }
+.fw-bold { font-family: 'Exo 2', sans-serif; font-weight: 700; }
+
+.separator {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border), transparent);
+  margin: 3rem 0;
+}
+
+@media (max-width: 700px) {
+  .nav-links { gap: 0; }
+  .nav-link { font-size: 0.65rem; padding: 0.3rem 0.5rem; }
+  .hero h1 { font-size: 2.2rem; }
+  .step-row::before { display: none; }
+  .weather-grid { grid-template-columns: repeat(3,1fr); }
+  .arch-flow { flex-direction: column; }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+
+/* ── DB COLLECTION ── */
+.db-section { margin-bottom: 1.5rem; }
+.db-collection-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+.db-collection-name {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--cyan);
+}
+.db-count {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--text2);
+}
+
+/* ── NOTIFICATION POPUP ── */
+.notif-popup {
+  position: fixed;
+  top: 80px;
+  right: 1.5rem;
+  background: var(--surface2);
+  border: 1px solid rgba(255,92,26,0.4);
+  border-radius: 14px;
+  padding: 1rem 1.25rem;
+  font-size: 0.82rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  transform: translateX(150%);
+  transition: transform 0.5s cubic-bezier(0.34,1.56,0.64,1);
+  z-index: 9998;
+  max-width: 300px;
+  backdrop-filter: blur(20px);
+}
+.notif-popup.show { transform: translateX(0); }
+.notif-title { font-family: 'Exo 2', sans-serif; font-weight: 700; font-size: 0.85rem; margin-bottom: 0.2rem; }
+.notif-desc { color: var(--text2); font-size: 0.78rem; }
+
+/* ── DIGILOCKER MODAL ── */
+#dl-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 9990;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(6px);
+}
+#dl-modal.show { display: flex; }
+.dl-modal-inner {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 2rem;
+  width: 90%;
+  max-width: 380px;
+  animation: fadeIn 0.3s ease;
+}
+.dl-modal-title { font-family: 'Exo 2', sans-serif; font-weight: 800; font-size: 1.2rem; margin-bottom: 0.5rem; }
+.dl-modal-sub { color: var(--text2); font-size: 0.85rem; margin-bottom: 1.5rem; }
+.dl-input {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem;
+  outline: none;
+  margin-bottom: 0.75rem;
+  transition: border-color 0.2s;
+}
+.dl-input:focus { border-color: rgba(0,212,255,0.5); }
+.dl-input::placeholder { color: var(--text2); }
+.dl-row { display: flex; gap: 0.75rem; }
+
+</style>
+</head>
+<body>
+
+<!-- LOADING SCREEN -->
+<div id="loading">
+  <div class="loading-logo">MOTO<span>IQ</span></div>
+  <div class="loading-bar-wrap"><div class="loading-bar"></div></div>
+  <div class="loading-text">INITIALIZING RIDE SYSTEMS...</div>
+</div>
+
+<!-- NOTIFICATION POPUP -->
+<div class="notif-popup" id="notif">
+  <div style="font-size:1.4rem">⚠️</div>
+  <div>
+    <div class="notif-title">Speed Zone Ahead</div>
+    <div class="notif-desc">You're approaching a 40 km/h zone in 400m. Slow down.</div>
+  </div>
+</div>
+
+<!-- DIGILOCKER MODAL -->
+<div id="dl-modal">
+  <div class="dl-modal-inner">
+    <div style="font-size:2rem;margin-bottom:0.75rem">🔐</div>
+    <div class="dl-modal-title">DigiLocker Login</div>
+    <div class="dl-modal-sub">Enter your credentials to fetch your documents securely</div>
+    <input class="dl-input" placeholder="Mobile Number / Aadhaar" type="text">
+    <input class="dl-input" placeholder="OTP / Password" type="password">
+    <div class="dl-row">
+      <button class="btn-ghost" onclick="closeDLModal()" style="flex:1;padding:0.75rem;font-size:0.85rem">Cancel</button>
+      <button class="btn-primary" onclick="fetchDLDocs()" style="flex:1;padding:0.75rem;font-size:0.85rem">Connect</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast">
+  <span id="toast-icon">✅</span>
+  <span id="toast-msg">Done!</span>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo" onclick="showPage('home')">MOTO<span>IQ</span></div>
+  <div class="nav-links">
+    <div class="nav-link active" data-page="home" onclick="showPage('home')">🏠 Home</div>
+    <div class="nav-link" data-page="nav-page" onclick="showPage('nav-page')">🧭 Navigate</div>
+    <div class="nav-link" data-page="safety" onclick="showPage('safety')">⚠️ Safety</div>
+    <div class="nav-link" data-page="assist" onclick="showPage('assist')">🛠 Assist</div>
+    <div class="nav-link" data-page="fuel" onclick="showPage('fuel')">⛽ Fuel</div>
+    <div class="nav-link" data-page="group" onclick="showPage('group')">👥 Group</div>
+    <div class="nav-link" data-page="ai" onclick="showPage('ai')">🤖 AI Planner</div>
+    <div class="nav-link" data-page="digi" onclick="showPage('digi')">🔐 DigiLocker</div>
+    <div class="nav-link" data-page="stats" onclick="showPage('stats')">📊 Stats</div>
+    <div class="nav-link" data-page="arch" onclick="showPage('arch')">📐 Architecture</div>
+    <div class="nav-link" data-page="pricing" onclick="showPage('pricing')">💰 Pricing</div>
+    <div class="nav-link" data-page="contact" onclick="showPage('contact')">📞 Community</div>
+  </div>
+  <button class="nav-cta" onclick="showPage('nav-page')">PLAN RIDE ›</button>
+</nav>
+
+<!-- ══════════════════════════════════════
+     PAGE 1: HOME
+══════════════════════════════════════ -->
+<div class="page active" id="page-home">
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-grid"></div>
+    <div class="hero-glow"></div>
+    <div class="hero-glow2"></div>
+
+    <div class="hero-badge">
+      <div class="pulse-dot"></div>
+      INDIA'S SMART RIDING PLATFORM
+    </div>
+
+    <h1>
+      <div class="line1">Not the fastest route.</div>
+      <div class="line2">The Best Ride.</div>
+    </h1>
+    <p class="hero-sub">AI-powered route planning, real-time safety alerts, group rides, and seamless DigiLocker integration — built for riders, by riders.</p>
+
+    <div class="hero-btns">
+      <button class="btn-primary" onclick="showPage('nav-page')">🗺 Plan Your Ride</button>
+      <button class="btn-ghost" onclick="showPage('digi')">🔐 Connect DigiLocker</button>
+    </div>
+
+    <!-- Animated Road -->
+    <div class="road-visual">
+      <svg class="road-svg" viewBox="0 0 700 160" fill="none">
+        <!-- Road -->
+        <path class="road-line" d="M 20 140 C 100 140 120 80 200 80 C 280 80 300 120 380 100 C 460 80 500 40 600 40 C 640 40 670 50 690 60" stroke="rgba(255,92,26,0.4)" stroke-width="3" stroke-linecap="round" fill="none"/>
+        <!-- Dashes -->
+        <path class="road-line" d="M 20 140 C 100 140 120 80 200 80 C 280 80 300 120 380 100 C 460 80 500 40 600 40 C 640 40 670 50 690 60" stroke="var(--orange)" stroke-width="1.5" stroke-dasharray="12 8" fill="none" style="animation-delay:0.5s"/>
+        <!-- Start pin -->
+        <circle cx="20" cy="140" r="6" fill="var(--green)"/>
+        <!-- End pin -->
+        <circle cx="690" cy="60" r="6" fill="var(--orange)"/>
+        <!-- Bike dot -->
+        <g class="moto-dot">
+          <circle cx="20" cy="140" r="8" fill="var(--cyan)" opacity="0.9"/>
+          <circle cx="20" cy="140" r="12" fill="none" stroke="var(--cyan)" stroke-width="1.5" opacity="0.3"/>
+          <text x="20" y="144" text-anchor="middle" font-size="8" fill="#000">🏍</text>
+        </g>
+        <!-- Labels -->
+        <text x="20" y="158" font-size="9" fill="rgba(255,255,255,0.5)" font-family="'Exo 2',sans-serif">Pune</text>
+        <text x="660" y="58" font-size="9" fill="rgba(255,255,255,0.5)" font-family="'Exo 2',sans-serif">Mumbai</text>
+        <!-- Elevation marks -->
+        <line x1="200" y1="80" x2="200" y2="155" stroke="rgba(255,255,255,0.08)" stroke-dasharray="4 4"/>
+        <text x="200" y="155" text-anchor="middle" font-size="7" fill="rgba(255,255,255,0.35)" font-family="'JetBrains Mono',monospace">↑ 820m</text>
+        <line x1="380" y1="100" x2="380" y2="155" stroke="rgba(255,255,255,0.08)" stroke-dasharray="4 4"/>
+        <text x="380" y="155" text-anchor="middle" font-size="7" fill="rgba(255,255,255,0.35)" font-family="'JetBrains Mono',monospace">↑ 650m</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Stats Bar -->
+  <div class="stats-bar">
+    <div class="stats-bar-item"><div class="stats-bar-num">42K+</div><div class="stats-bar-lbl">Active Riders</div></div>
+    <div class="stats-bar-item"><div class="stats-bar-num">8.2M</div><div class="stats-bar-lbl">KM Mapped</div></div>
+    <div class="stats-bar-item"><div class="stats-bar-num">3,400+</div><div class="stats-bar-lbl">Scenic Routes</div></div>
+    <div class="stats-bar-item"><div class="stats-bar-num">98.2%</div><div class="stats-bar-lbl">Safety Score</div></div>
+    <div class="stats-bar-item"><div class="stats-bar-num">12+</div><div class="stats-bar-lbl">API Integrations</div></div>
+  </div>
+
+  <!-- Features -->
+  <div class="section">
+    <div class="section-label">CORE FEATURES</div>
+    <div class="section-title">Everything a rider needs</div>
+    <p class="section-sub" style="margin-bottom:2.5rem">One platform. Real APIs. Designed for Indian roads and adventure seekers.</p>
+
+    <div class="grid-3">
+      <div class="glass-card">
+        <div class="feat-icon" style="background:rgba(255,92,26,0.12);">🧭</div>
+        <div class="feat-title">Smart Navigation</div>
+        <div class="feat-desc">Scenic route optimization with elevation curves and curvy-road detection powered by Mapbox.</div>
+        <div style="margin-top:1rem"><span class="badge badge-orange">Mapbox API</span></div>
+      </div>
+      <div class="glass-card">
+        <div class="feat-icon" style="background:rgba(255,214,0,0.1);">⚠️</div>
+        <div class="feat-title">Real-time Alerts</div>
+        <div class="feat-desc">Speed zones, accident-prone areas, live weather warnings fetched from OpenWeatherMap.</div>
+        <div style="margin-top:1rem"><span class="badge badge-yellow">Weather API</span></div>
+      </div>
+      <div class="glass-card">
+        <div class="feat-icon" style="background:rgba(0,212,255,0.1);">🤖</div>
+        <div class="feat-title">AI Ride Planner</div>
+        <div class="feat-desc">Tell the AI your mood, distance, and preferences — it builds the perfect route suggestion.</div>
+        <div style="margin-top:1rem"><span class="badge badge-cyan">OpenAI API</span></div>
+      </div>
+      <div class="glass-card">
+        <div class="feat-icon" style="background:rgba(0,255,136,0.08);">🔐</div>
+        <div class="feat-title">DigiLocker Integration</div>
+        <div class="feat-desc">Fetch your DL, RC, and Insurance directly. No paperwork needed at checkpoints.</div>
+        <div style="margin-top:1rem"><span class="badge badge-green">Gov API</span></div>
+      </div>
+      <div class="glass-card">
+        <div class="feat-icon" style="background:rgba(255,92,26,0.12);">👥</div>
+        <div class="feat-title">Group Ride Mode</div>
+        <div class="feat-desc">Live rider tracking on a shared map. Ride Marshal dashboard. Instant buddy alerts.</div>
+        <div style="margin-top:1rem"><span class="badge badge-orange">WebSocket</span></div>
+      </div>
+      <div class="glass-card">
+        <div class="feat-icon" style="background:rgba(0,212,255,0.1);">⛽</div>
+        <div class="feat-title">Fuel & Stops</div>
+        <div class="feat-desc">Real-time petrol pump locator, live fuel prices, and biker-friendly café discovery.</div>
+        <div style="margin-top:1rem"><span class="badge badge-cyan">Foursquare API</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- How it works -->
+  <div style="background:var(--bg2); border-top:1px solid var(--border); border-bottom:1px solid var(--border);">
+    <div class="section">
+      <div class="section-label">HOW IT WORKS</div>
+      <div class="section-title" style="margin-bottom:2.5rem">Ride in 4 simple steps</div>
+      <div class="step-row">
+        <div class="step-item">
+          <div class="step-num">01</div>
+          <div class="step-title">Create Profile</div>
+          <div class="step-desc">Sign up, link your bike details, and connect DigiLocker for paperless rides.</div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">02</div>
+          <div class="step-title">Plan Route</div>
+          <div class="step-desc">Use AI Planner or Smart Nav to generate scenic, safe, optimized routes.</div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">03</div>
+          <div class="step-title">Ride Smart</div>
+          <div class="step-desc">Receive live alerts, weather updates, and safety warnings along the way.</div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">04</div>
+          <div class="step-title">Share & Earn</div>
+          <div class="step-desc">Log your ride, earn badges, share your journey, and grow your rider rep.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tech Stack Preview -->
+  <div class="section">
+    <div class="section-label">TECH ARCHITECTURE</div>
+    <div class="section-title" style="margin-bottom:1rem">Enterprise-grade. College-built.</div>
+    <p class="section-sub" style="margin-bottom:2rem">Full-stack MVP using Node.js, MongoDB, and live API integrations.</p>
+    <div class="arch-flow">
+      <div class="arch-node highlight-orange">React Frontend<div class="arch-node-label">UI / PWA</div></div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-node highlight-cyan">Node.js Backend<div class="arch-node-label">Express REST API</div></div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-node highlight-green">MongoDB<div class="arch-node-label">NoSQL Database</div></div>
+    </div>
+    <div style="text-align:center;margin-top:1.5rem;display:flex;flex-wrap:wrap;gap:0.75rem;justify-content:center;">
+      <span class="badge badge-orange">Mapbox</span>
+      <span class="badge badge-cyan">OpenWeatherMap</span>
+      <span class="badge badge-green">DigiLocker</span>
+      <span class="badge badge-orange">Foursquare</span>
+      <span class="badge badge-cyan">OpenAI</span>
+      <span class="badge badge-yellow">WebSockets</span>
+      <span class="badge badge-green">JWT Auth</span>
+    </div>
+    <div style="text-align:center;margin-top:2rem">
+      <button class="btn-ghost" onclick="showPage('arch')">View Full Architecture →</button>
+    </div>
+  </div>
+
+</div>
+
+
+<!-- ══════════════════════════════════════
+     PAGE 2: SMART NAVIGATION
+══════════════════════════════════════ -->
+<div class="page" id="page-nav-page">
+  <div class="page-header">
+    <div class="section-label">SMART NAVIGATION</div>
+    <div class="section-title">Find the best ride, not the fastest one</div>
+    <p class="text-muted" style="margin-top:0.5rem;">Powered by Mapbox + OpenRouteService API</p>
+  </div>
+  <div class="section">
+    <div class="grid-2" style="gap:2rem">
+      <!-- Left: Route Planner -->
+      <div>
+        <div class="glass-card mb-1" style="margin-bottom:1rem">
+          <div class="feat-title mb-1" style="margin-bottom:1rem">Route Planner</div>
+          <div style="margin-bottom:0.75rem">
+            <div class="form-label">From</div>
+            <input class="form-input" value="Pune, Maharashtra" placeholder="Start location">
+          </div>
+          <div style="margin-bottom:0.75rem">
+            <div class="form-label">To</div>
+            <input class="form-input" value="Mumbai, Maharashtra" placeholder="Destination">
+          </div>
+          <div style="margin-bottom:1rem">
+            <div class="form-label">Ride Mode</div>
+            <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
+              <div class="map-btn active" onclick="selectMode(this)">🎢 Fun Route</div>
+              <div class="map-btn" onclick="selectMode(this)">🏔 Scenic</div>
+              <div class="map-btn" onclick="selectMode(this)">⚡ Fast</div>
+              <div class="map-btn" onclick="selectMode(this)">🌧 Safe</div>
+            </div>
+          </div>
+          <button class="btn-primary" style="width:100%" onclick="simulateRoute()">Calculate Route</button>
+        </div>
+
+        <!-- Route Result -->
+        <div class="glass-card" id="route-result" style="display:none">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+            <div class="feat-title">Route Found ✓</div>
+            <span class="badge badge-green">OPTIMAL</span>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.75rem;text-align:center;margin-bottom:1rem">
+            <div class="glass-card" style="padding:0.75rem">
+              <div style="font-family:'Exo 2',sans-serif;font-weight:900;font-size:1.3rem;color:var(--orange)">148<span style="font-size:0.8rem">km</span></div>
+              <div style="font-size:0.7rem;color:var(--text2)">Distance</div>
+            </div>
+            <div class="glass-card" style="padding:0.75rem">
+              <div style="font-family:'Exo 2',sans-serif;font-weight:900;font-size:1.3rem;color:var(--cyan)">3h 20m</div>
+              <div style="font-size:0.7rem;color:var(--text2)">Duration</div>
+            </div>
+            <div class="glass-card" style="padding:0.75rem">
+              <div style="font-family:'Exo 2',sans-serif;font-weight:900;font-size:1.3rem;color:var(--green)">8.4/10</div>
+              <div style="font-size:0.7rem;color:var(--text2)">Fun Score</div>
+            </div>
+          </div>
+          <div class="alert-item info">
+            <div class="alert-icon">🏔</div>
+            <div><div class="alert-title">Scenic Highlight</div><div class="alert-desc">Lonavala ghat section — 28 curves, 800m elevation gain. ⭐ Rider-rated 9.1/10</div></div>
+          </div>
+        </div>
+
+        <!-- API Response Preview -->
+        <div class="glass-card mt-1" style="margin-top:1rem">
+          <div class="json-label">MAPBOX API RESPONSE PREVIEW</div>
+          <div class="json-block">
+{<br>
+&nbsp;&nbsp;<span class="json-key">"routes"</span>: [{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"distance"</span>: <span class="json-num">148320</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"duration"</span>: <span class="json-num">12000</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"scenic_score"</span>: <span class="json-num">8.4</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"elevation_gain"</span>: <span class="json-num">820</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"curve_count"</span>: <span class="json-num">67</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"waypoints"</span>: [<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-string">"Pune"</span>, <span class="json-string">"Khandala"</span>, <span class="json-string">"Lonavala"</span>, <span class="json-string">"Mumbai"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;]<br>
+&nbsp;&nbsp;}],<br>
+&nbsp;&nbsp;<span class="json-key">"status"</span>: <span class="json-string">"200 OK"</span><br>
+}
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Mock Map -->
+      <div>
+        <div class="map-container" id="main-map">
+          <svg width="100%" height="100%" viewBox="0 0 600 380">
+            <!-- Map background terrain -->
+            <defs>
+              <pattern id="mapgrid" width="30" height="30" patternUnits="userSpaceOnUse">
+                <path d="M 30 0 L 0 0 0 30" fill="none" stroke="rgba(0,212,255,0.06)" stroke-width="1"/>
+              </pattern>
+            </defs>
+            <rect width="600" height="380" fill="#0A1628"/>
+            <rect width="600" height="380" fill="url(#mapgrid)"/>
+            <!-- Terrain shapes -->
+            <ellipse cx="150" cy="250" rx="120" ry="60" fill="rgba(0,80,40,0.3)"/>
+            <ellipse cx="400" cy="180" rx="100" ry="50" fill="rgba(0,60,30,0.25)"/>
+            <ellipse cx="280" cy="320" rx="80" ry="30" fill="rgba(0,50,25,0.2)"/>
+            <!-- Road lines -->
+            <path d="M 50 330 C 120 300 150 240 220 200 C 290 160 340 180 400 150 C 460 120 510 90 560 70" stroke="rgba(255,255,255,0.12)" stroke-width="6" fill="none" stroke-linecap="round"/>
+            <!-- Scenic route (orange) -->
+            <path id="map-route" d="M 50 330 C 100 280 140 240 190 210 C 240 180 280 200 330 170 C 380 140 440 100 560 70"
+              stroke="var(--orange)" stroke-width="3" fill="none" stroke-linecap="round"
+              stroke-dasharray="800" stroke-dashoffset="800"/>
+            <!-- Location markers -->
+            <circle cx="50" cy="330" r="8" fill="var(--green)"/>
+            <text x="62" y="334" font-size="10" fill="var(--green)" font-family="'Exo 2',sans-serif" font-weight="700">Pune</text>
+            <circle cx="560" cy="70" r="8" fill="var(--orange)"/>
+            <text x="520" y="64" font-size="10" fill="var(--orange)" font-family="'Exo 2',sans-serif" font-weight="700">Mumbai</text>
+            <!-- Waypoints -->
+            <circle cx="200" cy="205" r="5" fill="var(--cyan)"/>
+            <text x="208" y="200" font-size="8" fill="var(--cyan)" font-family="'Exo 2',sans-serif">Khandala</text>
+            <circle cx="330" cy="168" r="5" fill="var(--cyan)"/>
+            <text x="338" y="163" font-size="8" fill="var(--cyan)" font-family="'Exo 2',sans-serif">Lonavala</text>
+            <!-- Fuel stop -->
+            <circle cx="250" cy="185" r="4" fill="var(--yellow)"/>
+            <text x="255" y="182" font-size="7" fill="var(--yellow)" font-family="'Exo 2',sans-serif">⛽</text>
+            <!-- Alert zone -->
+            <circle cx="430" cy="128" r="18" fill="rgba(255,214,0,0.08)" stroke="rgba(255,214,0,0.3)" stroke-width="1" stroke-dasharray="4 3"/>
+            <text x="418" y="133" font-size="8" fill="var(--yellow)">⚠️</text>
+            <!-- Moving bike -->
+            <circle id="bikeDot" cx="50" cy="330" r="7" fill="var(--cyan)"/>
+            <circle id="bikePing" cx="50" cy="330" r="12" fill="none" stroke="var(--cyan)" stroke-width="1" opacity="0.4"/>
+          </svg>
+          <!-- Overlays -->
+          <div class="map-overlay-info">
+            <div style="color:var(--cyan);font-family:'JetBrains Mono',monospace;font-size:0.7rem;margin-bottom:0.3rem">LIVE ROUTE</div>
+            <div style="font-family:'Exo 2',sans-serif;font-weight:700;font-size:0.85rem">Pune → Mumbai</div>
+            <div style="color:var(--text2);font-size:0.75rem;margin-top:0.2rem">via Lonavala Ghat</div>
+          </div>
+          <div style="position:absolute;bottom:1rem;left:1rem;">
+            <span class="badge badge-orange">Powered by Mapbox</span>
+          </div>
+        </div>
+
+        <div class="glass-card mt-1" style="margin-top:1rem">
+          <div class="feat-title" style="margin-bottom:1rem">Elevation Profile</div>
+          <svg width="100%" height="80" viewBox="0 0 500 80">
+            <defs>
+              <linearGradient id="elevGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="var(--orange)" stop-opacity="0.4"/>
+                <stop offset="100%" stop-color="var(--orange)" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <path d="M 0 70 L 50 65 L 100 50 L 160 20 L 220 15 L 280 25 L 340 30 L 400 45 L 450 55 L 500 60 L 500 80 L 0 80 Z" fill="url(#elevGrad)"/>
+            <path d="M 0 70 L 50 65 L 100 50 L 160 20 L 220 15 L 280 25 L 340 30 L 400 45 L 450 55 L 500 60" stroke="var(--orange)" stroke-width="2" fill="none" stroke-linecap="round"/>
+            <text x="155" y="14" font-size="8" fill="var(--text2)" font-family="'JetBrains Mono',monospace">820m peak</text>
+            <text x="0" y="78" font-size="7" fill="var(--text2)" font-family="'JetBrains Mono',monospace">Pune</text>
+            <text x="460" y="78" font-size="7" fill="var(--text2)" font-family="'JetBrains Mono',monospace">Mumbai</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     PAGE 3: SAFETY & ALERTS
+══════════════════════════════════════ -->
+<div class="page" id="page-safety">
+  <div class="page-header">
+    <div class="section-label">RIDER SAFETY & ALERTS</div>
+    <div class="section-title">Know before you go</div>
+    <p class="text-muted" style="margin-top:0.5rem">Live weather + crowdsourced alerts. Your guardian on the road.</p>
+  </div>
+  <div class="section">
+    <div class="grid-2">
+      <!-- Weather Widget -->
+      <div>
+        <div class="section-label" style="margin-bottom:1rem">LIVE WEATHER — PUNE</div>
+        <div class="weather-main" id="weather-card">
+          <div style="font-size:4rem;margin-bottom:0.5rem" id="weather-emoji">☀️</div>
+          <div class="weather-temp" id="weather-temp">--°C</div>
+          <div class="weather-city" id="weather-city">Fetching location...</div>
+          <div class="weather-desc" id="weather-desc">Loading weather data...</div>
+          <div class="weather-grid">
+            <div class="weather-item">
+              <div class="weather-item-val" id="weather-humidity">--%</div>
+              <div class="weather-item-lbl">Humidity</div>
+            </div>
+            <div class="weather-item">
+              <div class="weather-item-val" id="weather-wind">-- km/h</div>
+              <div class="weather-item-lbl">Wind</div>
+            </div>
+            <div class="weather-item">
+              <div class="weather-item-val" id="weather-vis">-- km</div>
+              <div class="weather-item-lbl">Visibility</div>
+            </div>
+          </div>
+          <div id="weather-alert" style="display:none;margin-top:1rem;padding:0.75rem;background:rgba(255,61,61,0.12);border:1px solid rgba(255,61,61,0.3);border-radius:10px;font-size:0.8rem;color:var(--red)"></div>
+        </div>
+        <div style="margin-top:0.75rem">
+          <div class="json-label">OPENWEATHERMAP API RESPONSE</div>
+          <div class="json-block" id="weather-json">
+{<br>
+&nbsp;&nbsp;<span class="json-key">"status"</span>: <span class="json-string">"fetching..."</span><br>
+}
+          </div>
+        </div>
+      </div>
+
+      <!-- Alerts Feed -->
+      <div>
+        <div class="section-label" style="margin-bottom:1rem">LIVE ALERTS FEED</div>
+        <div class="alert-item danger">
+          <div class="alert-icon">🚨</div>
+          <div>
+            <div class="alert-title">Accident-Prone Zone</div>
+            <div class="alert-desc">NH48, Km 72 — 3 incidents last 7 days. Reduce speed below 60 km/h.</div>
+          </div>
+        </div>
+        <div class="alert-item warning">
+          <div class="alert-icon">⚠️</div>
+          <div>
+            <div class="alert-title">Speed Zone — 40 km/h</div>
+            <div class="alert-desc">School Zone active 7:30–9:00 AM & 1:00–2:30 PM near Wakad, Pune.</div>
+          </div>
+        </div>
+        <div class="alert-item info">
+          <div class="alert-icon">🛣</div>
+          <div>
+            <div class="alert-title">Road Under Repair</div>
+            <div class="alert-desc">Mumbai-Pune Expressway, Km 45–52. Single lane. Expect 20–30 min delay.</div>
+          </div>
+        </div>
+        <div class="alert-item success">
+          <div class="alert-icon">✅</div>
+          <div>
+            <div class="alert-title">Clear Roads — Lonavala</div>
+            <div class="alert-desc">All ghat sections clear. Light traffic. Ideal riding conditions today.</div>
+          </div>
+        </div>
+        <div class="alert-item warning">
+          <div class="alert-icon">🌫</div>
+          <div>
+            <div class="alert-title">Low Visibility Warning</div>
+            <div class="alert-desc">Khopoli ghat — Morning fog expected till 9 AM. Use low beams.</div>
+          </div>
+        </div>
+
+        <div style="margin-top:1.5rem">
+          <div class="json-label">BACKEND — /api/alerts</div>
+          <div class="json-block">
+{<br>
+&nbsp;&nbsp;<span class="json-key">"endpoint"</span>: <span class="json-string">"/api/alerts"</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"total"</span>: <span class="json-num">5</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"alerts"</span>: [{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"type"</span>: <span class="json-string">"ACCIDENT_ZONE"</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"severity"</span>: <span class="json-string">"HIGH"</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"location"</span>: <span class="json-string">"NH48, Km 72"</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"source"</span>: <span class="json-string">"crowdsourced"</span><br>
+&nbsp;&nbsp;}]<br>
+}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     PAGE 4: ROADSIDE ASSISTANCE
+══════════════════════════════════════ -->
+<div class="page" id="page-assist">
+  <div class="page-header">
+    <div class="section-label">ROADSIDE ASSISTANCE</div>
+    <div class="section-title">Help when you need it most</div>
+    <p class="text-muted" style="margin-top:0.5rem">Nearest mechanics & emergency services. Powered by MongoDB collection.</p>
+  </div>
+  <div class="section">
+    <div class="grid-2">
+      <div>
+        <!-- SOS Button -->
+        <div class="glass-card" style="text-align:center;padding:2rem;margin-bottom:1.5rem;border-color:rgba(255,61,61,0.3)">
+          <div style="font-size:2.5rem;margin-bottom:0.75rem">🆘</div>
+          <div class="feat-title" style="color:var(--red);margin-bottom:0.5rem">EMERGENCY SOS</div>
+          <div class="feat-desc" style="margin-bottom:1.25rem">Instantly share location with emergency contacts + nearest hospital</div>
+          <button class="btn-primary" style="background:linear-gradient(135deg,var(--red),#FF6B6B);box-shadow:0 0 30px rgba(255,61,61,0.3)" onclick="triggerSOS()">🆘 SEND SOS NOW</button>
+        </div>
+
+        <!-- Find Mechanic -->
+        <div class="glass-card">
+          <div class="feat-title" style="margin-bottom:0.75rem">🔧 Find Nearest Mechanic</div>
+          <input class="form-input" placeholder="Enter your location or use GPS..." style="margin-bottom:0.75rem">
+          <button class="btn-cyan-sm" style="width:100%;padding:0.65rem" onclick="showToast('🔍 Searching nearby mechanics...','📍')">Use My Location</button>
+        </div>
+
+        <div style="margin-top:1.5rem">
+          <div class="json-label">MONGODB — /api/mechanics</div>
+          <div class="json-block">
+{<br>
+&nbsp;&nbsp;<span class="json-key">"collection"</span>: <span class="json-string">"mechanics"</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"query"</span>: { <span class="json-key">"radius"</span>: <span class="json-num">5</span>, <span class="json-key">"unit"</span>: <span class="json-string">"km"</span> },<br>
+&nbsp;&nbsp;<span class="json-key">"results"</span>: <span class="json-num">4</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"sorted_by"</span>: <span class="json-string">"distance"</span><br>
+}
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="section-label" style="margin-bottom:1rem">NEARBY MECHANICS (4 found)</div>
+        <div class="mechanic-card">
+          <div class="mechanic-avatar">🔧</div>
+          <div class="mechanic-info">
+            <div class="mechanic-name">Raj Auto Works</div>
+            <div class="mechanic-meta">
+              <span>📍 1.2 km away</span>
+              <span class="stars">★★★★★</span><span style="font-size:0.75rem"> 4.9</span>
+            </div>
+            <div style="margin-top:0.3rem;font-size:0.72rem;color:var(--green)">● Open now · Hero, Bajaj, Royal Enfield</div>
+          </div>
+          <button class="btn-sm" onclick="showToast('📨 Request sent to Raj Auto Works!','🔧')">Request Help</button>
+        </div>
+        <div class="mechanic-card">
+          <div class="mechanic-avatar">⚙️</div>
+          <div class="mechanic-info">
+            <div class="mechanic-name">MotoFix Express</div>
+            <div class="mechanic-meta">
+              <span>📍 2.7 km away</span>
+              <span class="stars">★★★★</span><span style="font-size:0.75rem"> 4.6</span>
+            </div>
+            <div style="margin-top:0.3rem;font-size:0.72rem;color:var(--green)">● Open · All brands</div>
+          </div>
+          <button class="btn-sm" onclick="showToast('📨 Request sent to MotoFix Express!','🔧')">Request Help</button>
+        </div>
+        <div class="mechanic-card">
+          <div class="mechanic-avatar">🏍</div>
+          <div class="mechanic-info">
+            <div class="mechanic-name">SpeedZone Service Center</div>
+            <div class="mechanic-meta">
+              <span>📍 3.1 km away</span>
+              <span class="stars">★★★★</span><span style="font-size:0.75rem"> 4.4</span>
+            </div>
+            <div style="margin-top:0.3rem;font-size:0.72rem;color:var(--yellow)">● 2 hrs wait</div>
+          </div>
+          <button class="btn-sm" onclick="showToast('📨 Request sent to SpeedZone!','🔧')">Request Help</button>
+        </div>
+        <div class="mechanic-card">
+          <div class="mechanic-avatar">🛠</div>
+          <div class="mechanic-info">
+            <div class="mechanic-name">Bike Rescue 24x7</div>
+            <div class="mechanic-meta">
+              <span>📍 4.8 km away</span>
+              <span class="stars">★★★★★</span><span style="font-size:0.75rem"> 4.8</span>
+            </div>
+            <div style="margin-top:0.3rem;font-size:0.72rem;color:var(--green)">● 24x7 · Mobile mechanic</div>
+          </div>
+          <button class="btn-sm" onclick="showToast('📨 Request sent to Bike Rescue!','🔧')">Request Help</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     PAGE 5: FUEL & STOPS
+══════════════════════════════════════ -->
+<div class="page" id="page-fuel">
+  <div class="page-header">
+    <div class="section-label">FUEL & STOPS</div>
+    <div class="section-title">Never run dry. Always find a great stop.</div>
+    <p class="text-muted" style="margin-top:0.5rem">Petrol pumps, premium fuel filter, live prices, and biker-friendly cafés.</p>
+  </div>
+  <div class="section">
+    <div class="grid-2">
+      <div>
+        <div class="section-label" style="margin-bottom:1rem">FUEL STATIONS NEARBY</div>
+        <div style="display:flex;gap:0.5rem;margin-bottom:1rem;flex-wrap:wrap">
+          <button class="map-btn active" onclick="filterFuel(this,'all')">All</button>
+          <button class="map-btn" onclick="filterFuel(this,'premium')">⚡ Premium Only</button>
+          <button class="map-btn" onclick="filterFuel(this,'24h')">🕐 24/7</button>
+        </div>
+
+        <div class="fuel-card">
+          <div class="fuel-icon" style="background:rgba(255,214,0,0.12);">🛢</div>
+          <div class="fuel-info">
+            <div class="fuel-name">HP Speed — Wakad</div>
+            <div class="fuel-meta">📍 0.8 km · ⭐ 4.7 · <span style="color:var(--green)">Open</span></div>
+            <div style="margin-top:0.3rem;display:flex;gap:0.5rem">
+              <span class="badge badge-yellow" style="font-size:0.65rem">⚡ Premium</span>
+              <span class="badge badge-green" style="font-size:0.65rem">24/7</span>
+            </div>
+          </div>
+          <div class="fuel-price">₹106.2<div class="fuel-price-sub">per litre</div></div>
+        </div>
+
+        <div class="fuel-card">
+          <div class="fuel-icon" style="background:rgba(255,92,26,0.1);">⛽</div>
+          <div class="fuel-info">
+            <div class="fuel-name">Indian Oil — Baner</div>
+            <div class="fuel-meta">📍 1.4 km · ⭐ 4.3 · <span style="color:var(--green)">Open</span></div>
+            <div style="margin-top:0.3rem;display:flex;gap:0.5rem">
+              <span class="badge badge-orange" style="font-size:0.65rem">Regular + Premium</span>
+            </div>
+          </div>
+          <div class="fuel-price">₹104.8<div class="fuel-price-sub">per litre</div></div>
+        </div>
+
+        <div class="fuel-card">
+          <div class="fuel-icon" style="background:rgba(0,212,255,0.1);">🏪</div>
+          <div class="fuel-info">
+            <div class="fuel-name">Bharat Petroleum — Hinjewadi</div>
+            <div class="fuel-meta">📍 2.1 km · ⭐ 4.5 · <span style="color:var(--green)">Open</span></div>
+            <div style="margin-top:0.3rem;display:flex;gap:0.5rem">
+              <span class="badge badge-green" style="font-size:0.65rem">24/7</span>
+            </div>
+          </div>
+          <div class="fuel-price">₹105.4<div class="fuel-price-sub">per litre</div></div>
+        </div>
+
+        <div style="margin-top:1.5rem">
+          <div class="json-label">FOURSQUARE API + MONGODB</div>
+          <div class="json-block">
+{<br>
+&nbsp;&nbsp;<span class="json-key">"source"</span>: <span class="json-string">"Foursquare Places API"</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"fuel_stations"</span>: <span class="json-num">3</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"price_source"</span>: <span class="json-string">"MongoDB + scraped"</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"last_updated"</span>: <span class="json-string">"2 hrs ago"</span><br>
+}
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="section-label" style="margin-bottom:1rem">🍵 BIKER-FRIENDLY CAFÉS</div>
+
+        <div class="fuel-card" style="border-color:rgba(255,92,26,0.2)">
+          <div class="fuel-icon" style="background:rgba(255,92,26,0.12);font-size:1.5rem;">☕</div>
+          <div class="fuel-info">
+            <div class="fuel-name">Riders' Den Café — Lonavala</div>
+            <div class="fuel-meta">📍 Route waypoint · ⭐ 4.9 · Biker-favourite</div>
+            <div style="margin-top:0.3rem;font-size:0.75rem;color:var(--text2)">Parking ✓ &nbsp; Charging ✓ &nbsp; WiFi ✓ &nbsp; Mechanic nearby ✓</div>
+          </div>
+        </div>
+
+        <div class="fuel-card">
+          <div class="fuel-icon" style="background:rgba(0,212,255,0.08);font-size:1.5rem;">🍳</div>
+          <div class="fuel-info">
+            <div class="fuel-name">Highway Hunger — Khopoli</div>
+            <div class="fuel-meta">📍 2.3 km off route · ⭐ 4.6</div>
+            <div style="margin-top:0.3rem;font-size:0.75rem;color:var(--text2)">Parking ✓ &nbsp; Thali ₹120 &nbsp; Open 6 AM–11 PM</div>
+          </div>
+        </div>
+
+        <div class="fuel-card">
+          <div class="fuel-icon" style="background:rgba(0,255,136,0.08);font-size:1.5rem;">🏕</div>
+          <div class="fuel-info">
+            <div class="fuel-name">Summit Rest Stop — Khandala</div>
+            <div class="fuel-meta">📍 On route · ⭐ 4.8 · Views guaranteed</div>
+            <div style="margin-top:0.3rem;font-size:0.75rem;color:var(--text2)">Maggi &amp; chai ✓ &nbsp; Bike wash ✓ &nbsp; Camping area</div>
+          </div>
+        </div>
+
+        <!-- Fuel Price Chart -->
+        <div class="glass-card" style="margin-top:1rem">
+          <div class="feat-title" style="margin-bottom:1rem">Today's Fuel Prices</div>
+          <svg width="100%" height="100" viewBox="0 0 400 100">
+            <defs>
+              <linearGradient id="fuelGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="var(--green)" stop-opacity="0.3"/>
+                <stop offset="100%" stop-color="var(--green)" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <path d="M 0 60 L 60 55 L 120 58 L 180 50 L 240 48 L 300 52 L 360 45 L 400 42 L 400 100 L 0 100 Z" fill="url(#fuelGrad)"/>
+            <path d="M 0 60 L 60 55 L 120 58 L 180 50 L 240 48 L 300 52 L 360 45 L 400 42" stroke="var(--green)" stroke-width="2" fill="none"/>
+            <text x="0" y="95" font-size="8" fill="var(--text2)" font-family="'JetBrains Mono',monospace">Mon</text>
+            <text x="52" y="95" font-size="8" fill="var(--text2)" font-family="'JetBrains Mono',monospace">Tue</text>
+            <text x="112" y="95" font-size="8" fill="var(--text2)" font-family="'JetBrains Mono',monospace">Wed</text>
+            <text x="172" y="95" font-size="8" fill="var(--text2)" font-family="'JetBrains Mono',monospace">Thu</text>
+            <text x="232" y="95" font-size="8" fill="var(--text2)" font-family="'JetBrains Mono',monospace">Fri</text>
+            <text x="292" y="95" font-size="8" fill="var(--text2)" font-family="'JetBrains Mono',monospace">Sat</text>
+            <text x="352" y="95" font-size="8" fill="var(--text2)" font-family="'JetBrains Mono',monospace">Sun</text>
+            <text x="370" y="38" font-size="9" fill="var(--green)" font-family="'JetBrains Mono',monospace">₹106.2</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     PAGE 6: GROUP RIDE
+══════════════════════════════════════ -->
+<div class="page" id="page-group">
+  <div class="page-header">
+    <div class="section-label">GROUP RIDE MODE</div>
+    <div class="section-title">Ride together. Arrive together.</div>
+    <p class="text-muted" style="margin-top:0.5rem">Live rider tracking, marshal dashboard, and buddy alerts via WebSocket.</p>
+  </div>
+  <div class="section">
+    <div class="grid-2">
+      <!-- Live Group Map -->
+      <div>
+        <div class="section-label" style="margin-bottom:1rem">LIVE RIDE MAP — GROUP "THUNDER PACK"</div>
+        <div class="map-container" style="height:320px;position:relative;" id="group-map">
+          <svg width="100%" height="100%" viewBox="0 0 600 320">
+            <defs>
+              <pattern id="gmapgrid" width="30" height="30" patternUnits="userSpaceOnUse">
+                <path d="M 30 0 L 0 0 0 30" fill="none" stroke="rgba(0,212,255,0.05)" stroke-width="1"/>
+              </pattern>
+            </defs>
+            <rect width="600" height="320" fill="#080E1E"/>
+            <rect width="600" height="320" fill="url(#gmapgrid)"/>
+            <!-- Route path -->
+            <path d="M 50 280 C 150 250 200 200 280 180 C 360 160 420 140 560 60" stroke="rgba(255,92,26,0.3)" stroke-width="3" fill="none" stroke-dasharray="10 6"/>
+            <!-- Rider dots (animated via JS) -->
+            <circle id="r1" cx="120" cy="258" r="8" fill="#FF5C1A" stroke="#000" stroke-width="2"/>
+            <circle id="r1p" cx="120" cy="258" r="14" fill="none" stroke="#FF5C1A" stroke-width="1" opacity="0.3"/>
+            <text x="130" y="252" font-size="9" fill="var(--orange2)" font-family="'Exo 2',sans-serif" font-weight="700">Salaar (Marshal)</text>
+
+            <circle id="r2" cx="200" cy="220" r="7" fill="var(--cyan)" stroke="#000" stroke-width="2"/>
+            <circle id="r2p" cx="200" cy="220" r="12" fill="none" stroke="var(--cyan)" stroke-width="1" opacity="0.3"/>
+            <text x="210" y="215" font-size="9" fill="var(--cyan)" font-family="'Exo 2',sans-serif">Rishi</text>
+
+            <circle id="r3" cx="260" cy="192" r="7" fill="var(--green)" stroke="#000" stroke-width="2"/>
+            <circle id="r3p" cx="260" cy="192" r="12" fill="none" stroke="var(--green)" stroke-width="1" opacity="0.3"/>
+            <text x="270" y="187" font-size="9" fill="var(--green)" font-family="'Exo 2',sans-serif">Arjun</text>
+
+            <circle id="r4" cx="80" cy="275" r="7" fill="var(--yellow)" stroke="#000" stroke-width="2"/>
+            <circle id="r4p" cx="80" cy="275" r="12" fill="none" stroke="var(--yellow)" stroke-width="1" opacity="0.3"/>
+            <text x="92" y="272" font-size="9" fill="var(--yellow)" font-family="'Exo 2',sans-serif">Dev ⚠️</text>
+
+            <!-- Destination -->
+            <circle cx="560" cy="60" r="8" fill="var(--orange)"/>
+            <text x="520" y="55" font-size="9" fill="var(--orange)" font-family="'Exo 2',sans-serif" font-weight="700">Khandala</text>
+          </svg>
+          <div class="map-overlay-info" style="top:auto;bottom:1rem">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--cyan)">4 RIDERS LIVE</div>
+            <div style="font-size:0.75rem;color:var(--yellow);margin-top:0.2rem">⚠️ Dev is falling behind</div>
+          </div>
+        </div>
+
+        <!-- Marshal Controls -->
+        <div class="glass-card" style="margin-top:1rem">
+          <div class="feat-title" style="margin-bottom:0.75rem">🏁 Marshal Dashboard</div>
+          <div style="display:flex;gap:0.75rem;flex-wrap:wrap">
+            <button class="btn-cyan-sm" onclick="showToast('📢 Group alert sent to all riders!','📣')">📢 Broadcast Alert</button>
+            <button class="btn-sm" onclick="showToast('⏸ Ride paused. All riders notified.','⏸')">⏸ Pause Ride</button>
+            <button class="btn-cyan-sm" onclick="showToast('📍 Waypoint shared with group!','📍')">📍 Share Waypoint</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rider Status Panel -->
+      <div>
+        <div class="section-label" style="margin-bottom:1rem">RIDER STATUS PANEL</div>
+
+        <div class="mechanic-card" style="border-color:rgba(255,92,26,0.4)">
+          <div style="width:14px;height:14px;border-radius:50%;background:var(--orange);flex-shrink:0"></div>
+          <div class="mechanic-info">
+            <div class="mechanic-name">Salaar — MARSHAL 👑</div>
+            <div class="mechanic-meta"><span>Speed: 62 km/h</span><span>Battery: 94%</span></div>
+          </div>
+          <span class="badge badge-green">LEAD</span>
+        </div>
+        <div class="mechanic-card">
+          <div style="width:14px;height:14px;border-radius:50%;background:var(--cyan);flex-shrink:0"></div>
+          <div class="mechanic-info">
+            <div class="mechanic-name">Rishi</div>
+            <div class="mechanic-meta"><span>Speed: 58 km/h</span><span>+200m behind</span></div>
+          </div>
+          <span class="badge badge-green">OK</span>
+        </div>
+        <div class="mechanic-card">
+          <div style="width:14px;height:14px;border-radius:50%;background:var(--green);flex-shrink:0"></div>
+          <div class="mechanic-info">
+            <div class="mechanic-name">Arjun</div>
+            <div class="mechanic-meta"><span>Speed: 65 km/h</span><span>+400m behind</span></div>
+          </div>
+          <span class="badge badge-green">OK</span>
+        </div>
+        <div class="mechanic-card" style="border-color:rgba(255,214,0,0.4);background:rgba(255,214,0,0.04)">
+          <div style="width:14px;height:14px;border-radius:50%;background:var(--yellow);flex-shrink:0;animation:pulse 1.5s infinite"></div>
+          <div class="mechanic-info">
+            <div class="mechanic-name" style="color:var(--yellow)">Dev ⚠️ FALLING BEHIND</div>
+            <div class="mechanic-meta"><span>Speed: 38 km/h</span><span>+2.1km behind</span></div>
+          </div>
+          <button class="btn-sm" style="background:rgba(255,214,0,0.15);border-color:rgba(255,214,0,0.4);color:var(--yellow)" onclick="showToast('📞 Calling Dev...','📞')">Call</button>
+        </div>
+
+        <!-- Group Ride Settings -->
+        <div class="glass-card" style="margin-top:1.25rem">
+          <div class="feat-title" style="margin-bottom:1rem">Group Settings</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem;font-size:0.85rem">
+            <span>Max separation allowed</span>
+            <span class="badge badge-cyan">2 km</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem;font-size:0.85rem">
+            <span>Auto-wait at waypoints</span>
+            <span class="badge badge-green">ON</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.85rem">
+            <span>SOS sharing with group</span>
+            <span class="badge badge-green">ON</span>
+          </div>
+        </div>
+
+        <div style="margin-top:1.25rem">
+          <div class="json-label">WEBSOCKET EVENT</div>
+          <div class="json-block">
+{<br>
+&nbsp;&nbsp;<span class="json-key">"event"</span>: <span class="json-string">"rider_update"</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"rider"</span>: <span class="json-string">"dev_123"</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"lat"</span>: <span class="json-num">18.6285</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"lng"</span>: <span class="json-num">73.7534</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"speed"</span>: <span class="json-num">38</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"alert"</span>: <span class="json-string">"FALLING_BEHIND"</span><br>
+}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     PAGE 7: AI RIDE PLANNER
+══════════════════════════════════════ -->
+<div class="page" id="page-ai">
+  <div class="page-header">
+    <div class="section-label">AI RIDE PLANNER</div>
+    <div class="section-title">Your intelligent riding co-pilot</div>
+    <p class="text-muted" style="margin-top:0.5rem">Describe your ride. Our AI builds the perfect route.</p>
+  </div>
+  <div class="section">
+    <div class="grid-2">
+      <div>
+        <div class="chat-container">
+          <div class="chat-header">
+            <div class="chat-avatar">🤖</div>
+            <div>
+              <div class="chat-name">MotoIQ AI — Ride Planner</div>
+              <div class="chat-status"><div class="pulse-dot"></div> Online · Powered by AI</div>
+            </div>
+          </div>
+          <div class="chat-messages" id="chat-messages">
+            <div class="msg msg-ai">Hey rider! 🏍 I'm your AI Ride Planner. Tell me where you want to go, how far you want to ride, and what type of experience you're looking for — scenic, fast, adventurous, or relaxed. I'll craft the perfect route!</div>
+          </div>
+          <div class="chat-input-row">
+            <input class="chat-input" id="chat-input" placeholder="e.g. Plan a 200km scenic ride from Pune..." onkeydown="if(event.key==='Enter')sendChat()">
+            <button class="chat-send" onclick="sendChat()">➤</button>
+          </div>
+        </div>
+
+        <!-- Quick Prompts -->
+        <div style="margin-top:1rem;display:flex;flex-wrap:wrap;gap:0.5rem">
+          <span class="badge badge-orange" style="cursor:pointer;padding:0.4rem 0.8rem" onclick="quickPrompt('Plan a 150km scenic weekend ride from Pune')">🏔 Scenic Weekend</span>
+          <span class="badge badge-cyan" style="cursor:pointer;padding:0.4rem 0.8rem" onclick="quickPrompt('Find me a curvy mountain road ride under 100km')">🌀 Curvy Roads</span>
+          <span class="badge badge-green" style="cursor:pointer;padding:0.4rem 0.8rem" onclick="quickPrompt('Plan a sunrise ride with best views near Pune')">🌅 Sunrise Ride</span>
+          <span class="badge badge-yellow" style="cursor:pointer;padding:0.4rem 0.8rem" onclick="quickPrompt('Group ride plan for 6 people, Pune to Mahabaleshwar')">👥 Group Ride</span>
+        </div>
+      </div>
+
+      <!-- AI Output Panel -->
+      <div>
+        <div class="glass-card" style="margin-bottom:1rem">
+          <div class="feat-title" style="margin-bottom:1rem">🗺 AI-Generated Route</div>
+          <div id="ai-route-output">
+            <div style="text-align:center;padding:2rem;color:var(--text2)">
+              <div style="font-size:2.5rem;margin-bottom:0.75rem">🤖</div>
+              <div>Start a conversation to generate your personalized route...</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="glass-card">
+          <div class="json-label">AI API RESPONSE</div>
+          <div class="json-block" id="ai-json-block">
+{<br>
+&nbsp;&nbsp;<span class="json-key">"model"</span>: <span class="json-string">"gpt-4-turbo"</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"status"</span>: <span class="json-string">"awaiting_prompt"</span><br>
+}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     PAGE 8: DIGILOCKER
+══════════════════════════════════════ -->
+<div class="page" id="page-digi">
+  <div class="page-header">
+    <div class="section-label">DIGILOCKER INTEGRATION</div>
+    <div class="section-title">Ride paperless. Ride legal.</div>
+    <p class="text-muted" style="margin-top:0.5rem">Simulated DigiLocker integration — no real connection made.</p>
+  </div>
+  <div class="section">
+    <div class="grid-2">
+      <div>
+        <div class="section-label" style="margin-bottom:1.5rem">HOW IT WORKS</div>
+        <div class="digilock-flow">
+          <div class="dl-step">
+            <div class="dl-step-num">1</div>
+            <div class="dl-step-info">
+              <div class="dl-step-title">Connect DigiLocker</div>
+              <div class="dl-step-desc">Authenticate using your Aadhaar-linked mobile number. Secure OTP-based login.</div>
+            </div>
+          </div>
+          <div class="dl-step">
+            <div class="dl-step-num">2</div>
+            <div class="dl-step-info">
+              <div class="dl-step-title">Fetch Documents</div>
+              <div class="dl-step-desc">MotoIQ requests access to Driving License, RC, and Insurance from DigiLocker API.</div>
+            </div>
+          </div>
+          <div class="dl-step">
+            <div class="dl-step-num">3</div>
+            <div class="dl-step-info">
+              <div class="dl-step-title">Verification on Ride</div>
+              <div class="dl-step-desc">At checkpoints, generate a QR code for instant digital document verification.</div>
+            </div>
+          </div>
+          <div class="dl-step">
+            <div class="dl-step-num">4</div>
+            <div class="dl-step-info">
+              <div class="dl-step-title">Permit Checks</div>
+              <div class="dl-step-desc">Before interstate rides, app verifies legal compliance automatically.</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:2rem;text-align:center">
+          <button class="btn-primary" onclick="openDLModal()" style="margin-bottom:0.75rem;display:block;width:100%">🔐 Connect DigiLocker (Demo)</button>
+          <div style="font-size:0.75rem;color:var(--text2)">* This is a simulated demo. No real connection is made.</div>
+        </div>
+
+        <div style="margin-top:1.5rem">
+          <div class="json-label">DIGILOCKER API SIMULATION</div>
+          <div class="json-block">
+{<br>
+&nbsp;&nbsp;<span class="json-key">"api"</span>: <span class="json-string">"DigiLocker OAuth 2.0"</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"scope"</span>: <span class="json-string">"DL,RC,INSURANCE"</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"status"</span>: <span class="json-bool" id="dl-status">disconnected</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"issuer"</span>: <span class="json-string">"Ministry of Road Transport"</span><br>
+}
+          </div>
+        </div>
+      </div>
+
+      <!-- Document Cards -->
+      <div>
+        <div class="section-label" style="margin-bottom:1rem">YOUR DOCUMENTS</div>
+        <div id="doc-cards-locked" style="text-align:center;padding:3rem;color:var(--text2)">
+          <div style="font-size:3rem;margin-bottom:1rem">🔒</div>
+          <div style="font-family:'Exo 2',sans-serif;font-weight:700">Documents Locked</div>
+          <div style="font-size:0.85rem;margin-top:0.5rem">Connect DigiLocker to access your documents</div>
+        </div>
+        <div id="doc-cards-unlocked" style="display:none">
+          <div style="margin-bottom:0.75rem">
+            <div class="doc-card">
+              <div class="doc-card-icon">🪪</div>
+              <div class="doc-card-info">
+                <div class="doc-card-name">Driving License</div>
+                <div class="doc-card-meta">DL — MH12 20200042XXX · Valid till Dec 2035</div>
+                <div class="doc-card-status" style="color:var(--green);margin-top:0.3rem">✓ Verified · Transport (LMV)</div>
+              </div>
+              <span class="badge badge-green">VALID</span>
+            </div>
+          </div>
+          <div style="margin-bottom:0.75rem">
+            <div class="doc-card">
+              <div class="doc-card-icon">🏍</div>
+              <div class="doc-card-info">
+                <div class="doc-card-name">Vehicle Registration (RC)</div>
+                <div class="doc-card-meta">MH12 AB 1234 · Royal Enfield Classic 350</div>
+                <div class="doc-card-status" style="color:var(--green);margin-top:0.3rem">✓ Fitness valid till Aug 2028</div>
+              </div>
+              <span class="badge badge-green">VALID</span>
+            </div>
+          </div>
+          <div style="margin-bottom:0.75rem">
+            <div class="doc-card">
+              <div class="doc-card-icon">🛡</div>
+              <div class="doc-card-info">
+                <div class="doc-card-name">Vehicle Insurance</div>
+                <div class="doc-card-meta">HDFC Ergo · Policy ending Mar 2026</div>
+                <div class="doc-card-status" style="color:var(--yellow);margin-top:0.3rem">⚠️ Renew in 30 days</div>
+              </div>
+              <span class="badge badge-yellow">RENEW SOON</span>
+            </div>
+          </div>
+          <div style="margin-bottom:0.75rem">
+            <div class="doc-card">
+              <div class="doc-card-icon">📋</div>
+              <div class="doc-card-info">
+                <div class="doc-card-name">PUC Certificate</div>
+                <div class="doc-card-meta">Pollution under control · Valid till Jul 2025</div>
+                <div class="doc-card-status" style="color:var(--green);margin-top:0.3rem">✓ Compliant</div>
+              </div>
+              <span class="badge badge-green">VALID</span>
+            </div>
+          </div>
+          <button class="btn-cyan-sm" style="width:100%;padding:0.65rem;margin-top:0.5rem" onclick="showToast('📲 QR code generated for checkpoint!','🔳')">🔳 Generate Checkpoint QR</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     PAGE 9: STATS & SOCIAL
+══════════════════════════════════════ -->
+<div class="page" id="page-stats">
+  <div class="page-header">
+    <div class="section-label">RIDE STATS & SOCIAL</div>
+    <div class="section-title">Your riding story, in numbers</div>
+    <p class="text-muted" style="margin-top:0.5rem">All your rides logged, analyzed, and share-ready.</p>
+  </div>
+  <div class="section">
+    <!-- Stats Grid -->
+    <div class="grid-4" style="margin-bottom:2.5rem">
+      <div class="stat-card"><div class="stat-num">3,847</div><div class="stat-label">Total km ridden</div></div>
+      <div class="stat-card"><div class="stat-num">42</div><div class="stat-label">Rides completed</div></div>
+      <div class="stat-card"><div class="stat-num">186h</div><div class="stat-label">Total ride time</div></div>
+      <div class="stat-card"><div class="stat-num">91.4</div><div class="stat-label">Safety score</div></div>
+    </div>
+
+    <!-- Badges -->
+    <div class="section-label" style="margin-bottom:1rem">EARNED BADGES</div>
+    <div class="badge-grid">
+      <div class="gam-badge"><div class="gam-badge-icon">🏔</div><div class="gam-badge-name">MOUNTAIN MASTER</div><div class="gam-badge-desc">500km+ in ghats</div></div>
+      <div class="gam-badge"><div class="gam-badge-icon">🌅</div><div class="gam-badge-name">SUNRISE RIDER</div><div class="gam-badge-desc">5 dawn departures</div></div>
+      <div class="gam-badge"><div class="gam-badge-icon">🌧</div><div class="gam-badge-name">RAIN WARRIOR</div><div class="gam-badge-desc">Rode in monsoon</div></div>
+      <div class="gam-badge"><div class="gam-badge-icon">👥</div><div class="gam-badge-name">GROUP LEADER</div><div class="gam-badge-desc">Led 3 group rides</div></div>
+      <div class="gam-badge"><div class="gam-badge-icon">⚡</div><div class="gam-badge-name">SPEED DEMON</div><div class="gam-badge-desc">200km in 3hrs</div></div>
+      <div class="gam-badge" style="opacity:0.4"><div class="gam-badge-icon">🌍</div><div class="gam-badge-name">EXPLORER</div><div class="gam-badge-desc">5 states visited</div></div>
+    </div>
+
+    <div class="separator"></div>
+
+    <!-- Ride History -->
+    <div class="section-label" style="margin-bottom:1rem">RECENT RIDES</div>
+    <div class="ride-row">
+      <div class="ride-map-thumb">🏔</div>
+      <div class="ride-info">
+        <div class="ride-title">Pune → Lonavala Weekend Blast</div>
+        <div class="ride-meta">23 Mar 2026 · Sunday · Sunny ☀️</div>
+        <div class="ride-stats">
+          <span class="ride-stat">📏 86 km</span>
+          <span class="ride-stat">⏱ 2h 10m</span>
+          <span class="ride-stat">🏔 820m ↑</span>
+          <span class="ride-stat">😊 Fun: 9.2/10</span>
+        </div>
+      </div>
+      <button class="btn-sm" onclick="showToast('🔗 Ride link copied!','📤')">Share</button>
+    </div>
+    <div class="ride-row">
+      <div class="ride-map-thumb">🌄</div>
+      <div class="ride-info">
+        <div class="ride-title">Group Ride — Mahabaleshwar Trip</div>
+        <div class="ride-meta">15 Mar 2026 · Saturday · 6 riders</div>
+        <div class="ride-stats">
+          <span class="ride-stat">📏 240 km</span>
+          <span class="ride-stat">⏱ 6h 45m</span>
+          <span class="ride-stat">🏔 1100m ↑</span>
+          <span class="ride-stat">😊 Fun: 9.8/10</span>
+        </div>
+      </div>
+      <button class="btn-sm" onclick="showToast('🔗 Ride link copied!','📤')">Share</button>
+    </div>
+    <div class="ride-row">
+      <div class="ride-map-thumb">🌆</div>
+      <div class="ride-info">
+        <div class="ride-title">Evening Expressway Run</div>
+        <div class="ride-meta">10 Mar 2026 · Wednesday · Solo</div>
+        <div class="ride-stats">
+          <span class="ride-stat">📏 120 km</span>
+          <span class="ride-stat">⏱ 1h 40m</span>
+          <span class="ride-stat">🏔 200m ↑</span>
+          <span class="ride-stat">😊 Fun: 7.5/10</span>
+        </div>
+      </div>
+      <button class="btn-sm" onclick="showToast('🔗 Ride link copied!','📤')">Share</button>
+    </div>
+
+    <div style="margin-top:1.5rem">
+      <div class="json-label">RIDE HISTORY — MONGODB DOCUMENT</div>
+      <div class="json-block">
+{<br>
+&nbsp;&nbsp;<span class="json-key">"_id"</span>: <span class="json-string">"ObjectId('65f3a8c...')"</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"rider_id"</span>: <span class="json-string">"salaar_01"</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"route"</span>: <span class="json-string">"Pune → Lonavala"</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"distance_km"</span>: <span class="json-num">86</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"duration_min"</span>: <span class="json-num">130</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"fun_score"</span>: <span class="json-num">9.2</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"elevation_gain"</span>: <span class="json-num">820</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"badges_earned"</span>: [<span class="json-string">"MOUNTAIN_MASTER"</span>]<br>
+}
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     PAGE 10: ARCHITECTURE
+══════════════════════════════════════ -->
+<div class="page" id="page-arch">
+  <div class="page-header">
+    <div class="section-label">SYSTEM ARCHITECTURE</div>
+    <div class="section-title">How MotoIQ is built</div>
+    <p class="text-muted" style="margin-top:0.5rem">Full-stack architecture: Frontend → Node.js → MongoDB → External APIs</p>
+  </div>
+  <div class="section">
+    <!-- Architecture Flow -->
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:2rem;margin-bottom:2rem">
+      <div style="text-align:center;margin-bottom:2rem">
+        <div class="section-label">FULL SYSTEM DIAGRAM</div>
+      </div>
+      <div class="arch-flow" style="flex-direction:column;gap:1rem">
+        <!-- Layer 1: Frontend -->
+        <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
+          <div class="arch-node highlight-orange">React.js / PWA<div class="arch-node-label">Mobile + Web UI</div></div>
+          <div class="arch-node highlight-orange">Mapbox GL JS<div class="arch-node-label">Route Rendering</div></div>
+          <div class="arch-node highlight-orange">WebSocket Client<div class="arch-node-label">Group Ride Live</div></div>
+        </div>
+        <div style="text-align:center;color:var(--text2);font-size:1.5rem">↕</div>
+        <!-- Layer 2: Backend -->
+        <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
+          <div class="arch-node highlight-cyan">Node.js + Express<div class="arch-node-label">REST API Server</div></div>
+          <div class="arch-node highlight-cyan">Socket.io Server<div class="arch-node-label">Realtime Events</div></div>
+          <div class="arch-node highlight-cyan">JWT Auth<div class="arch-node-label">Security Layer</div></div>
+        </div>
+        <div style="text-align:center;color:var(--text2);font-size:1.5rem">↕</div>
+        <!-- Layer 3: DB -->
+        <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
+          <div class="arch-node highlight-green">MongoDB Atlas<div class="arch-node-label">Primary Database</div></div>
+          <div class="arch-node highlight-green">Redis Cache<div class="arch-node-label">Sessions + Routes</div></div>
+        </div>
+        <div style="text-align:center;color:var(--text2);font-size:1.5rem">↕</div>
+        <!-- Layer 4: APIs -->
+        <div style="display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap">
+          <div class="arch-node">Mapbox API<div class="arch-node-label">Navigation</div></div>
+          <div class="arch-node">OpenWeatherMap<div class="arch-node-label">Weather</div></div>
+          <div class="arch-node">DigiLocker<div class="arch-node-label">Gov Documents</div></div>
+          <div class="arch-node">Foursquare<div class="arch-node-label">Places</div></div>
+          <div class="arch-node">OpenAI<div class="arch-node-label">AI Planner</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- API Endpoints -->
+    <div class="section-label" style="margin-bottom:1rem">BACKEND API ENDPOINTS</div>
+    <div class="endpoint-row"><span class="method-badge method-get">GET</span><span class="endpoint-path">/api/routes</span><span class="endpoint-desc">Fetch scenic routes with filters</span></div>
+    <div class="endpoint-row"><span class="method-badge method-get">GET</span><span class="endpoint-path">/api/alerts</span><span class="endpoint-desc">Live rider alerts + crowdsourced data</span></div>
+    <div class="endpoint-row"><span class="method-badge method-get">GET</span><span class="endpoint-path">/api/mechanics</span><span class="endpoint-desc">Nearby mechanics within radius</span></div>
+    <div class="endpoint-row"><span class="method-badge method-get">GET</span><span class="endpoint-path">/api/weather</span><span class="endpoint-desc">Live weather via OpenWeatherMap proxy</span></div>
+    <div class="endpoint-row"><span class="method-badge method-get">GET</span><span class="endpoint-path">/api/fuel-stations</span><span class="endpoint-desc">Petrol pumps + live fuel prices</span></div>
+    <div class="endpoint-row"><span class="method-badge method-post">POST</span><span class="endpoint-path">/api/rides</span><span class="endpoint-desc">Save completed ride to MongoDB</span></div>
+    <div class="endpoint-row"><span class="method-badge method-post">POST</span><span class="endpoint-path">/api/ai-route</span><span class="endpoint-desc">Generate AI route via OpenAI</span></div>
+    <div class="endpoint-row"><span class="method-badge method-post">POST</span><span class="endpoint-path">/api/digilocker/connect</span><span class="endpoint-desc">OAuth flow for DigiLocker</span></div>
+    <div class="endpoint-row"><span class="method-badge method-get">GET</span><span class="endpoint-path">/api/group/:id</span><span class="endpoint-desc">Live group ride state</span></div>
+
+    <div class="separator"></div>
+
+    <!-- MongoDB Collections -->
+    <div class="section-label" style="margin-bottom:1.5rem">MONGODB DATABASE COLLECTIONS</div>
+    <div class="grid-3">
+      <div class="glass-card">
+        <div class="db-collection-header">
+          <div class="db-collection-name">users</div>
+          <div class="db-count">42,381 docs</div>
+        </div>
+        <div class="json-block" style="font-size:0.72rem">
+{<br>
+&nbsp;&nbsp;<span class="json-key">"_id"</span>: <span class="json-string">"ObjectId"</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"name"</span>: <span class="json-string">"String"</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"bike"</span>: <span class="json-string">"String"</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"total_km"</span>: <span class="json-num">Number</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"badges"</span>: [Array]<br>
+}
+        </div>
+      </div>
+      <div class="glass-card">
+        <div class="db-collection-header">
+          <div class="db-collection-name">routes</div>
+          <div class="db-count">3,412 docs</div>
+        </div>
+        <div class="json-block" style="font-size:0.72rem">
+{<br>
+&nbsp;&nbsp;<span class="json-key">"_id"</span>: <span class="json-string">"ObjectId"</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"name"</span>: <span class="json-string">"String"</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"distance"</span>: <span class="json-num">Number</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"scenic_score"</span>: <span class="json-num">Number</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"waypoints"</span>: [Array]<br>
+}
+        </div>
+      </div>
+      <div class="glass-card">
+        <div class="db-collection-header">
+          <div class="db-collection-name">alerts</div>
+          <div class="db-count">8,920 docs</div>
+        </div>
+        <div class="json-block" style="font-size:0.72rem">
+{<br>
+&nbsp;&nbsp;<span class="json-key">"_id"</span>: <span class="json-string">"ObjectId"</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"type"</span>: <span class="json-string">"String"</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"severity"</span>: <span class="json-string">"String"</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"location"</span>: {GeoJSON},<br>
+&nbsp;&nbsp;<span class="json-key">"ttl"</span>: <span class="json-num">Number</span><br>
+}
+        </div>
+      </div>
+      <div class="glass-card">
+        <div class="db-collection-header">
+          <div class="db-collection-name">mechanics</div>
+          <div class="db-count">1,240 docs</div>
+        </div>
+        <div class="json-block" style="font-size:0.72rem">
+{<br>
+&nbsp;&nbsp;<span class="json-key">"name"</span>: <span class="json-string">"String"</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"location"</span>: {GeoJSON},<br>
+&nbsp;&nbsp;<span class="json-key">"rating"</span>: <span class="json-num">Number</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"brands"</span>: [Array],<br>
+&nbsp;&nbsp;<span class="json-key">"open_24h"</span>: <span class="json-bool">Boolean</span><br>
+}
+        </div>
+      </div>
+      <div class="glass-card">
+        <div class="db-collection-header">
+          <div class="db-collection-name">fuel_stations</div>
+          <div class="db-count">4,800 docs</div>
+        </div>
+        <div class="json-block" style="font-size:0.72rem">
+{<br>
+&nbsp;&nbsp;<span class="json-key">"name"</span>: <span class="json-string">"String"</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"price_per_l"</span>: <span class="json-num">Number</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"has_premium"</span>: <span class="json-bool">Boolean</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"location"</span>: {GeoJSON}<br>
+}
+        </div>
+      </div>
+      <div class="glass-card">
+        <div class="db-collection-header">
+          <div class="db-collection-name">group_rides</div>
+          <div class="db-count">521 docs</div>
+        </div>
+        <div class="json-block" style="font-size:0.72rem">
+{<br>
+&nbsp;&nbsp;<span class="json-key">"group_name"</span>: <span class="json-string">"String"</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"marshal"</span>: <span class="json-string">"ObjectId"</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"riders"</span>: [Array],<br>
+&nbsp;&nbsp;<span class="json-key">"status"</span>: <span class="json-string">"active"</span><br>
+}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     PAGE 11: PRICING
+══════════════════════════════════════ -->
+<div class="page" id="page-pricing">
+  <div class="page-header">
+    <div class="section-label">PRICING</div>
+    <div class="section-title">Ride more for less</div>
+    <p class="text-muted" style="margin-top:0.5rem">Start free. Upgrade when the roads call for more.</p>
+  </div>
+  <div class="section">
+    <div class="grid-2" style="max-width:800px;margin:0 auto">
+      <div class="price-card">
+        <div class="price-plan">FREE RIDER</div>
+        <div class="price-amount">₹0</div>
+        <div class="price-period">forever</div>
+        <div class="price-feature"><span class="price-feature-icon">✓</span>Basic route planning</div>
+        <div class="price-feature"><span class="price-feature-icon">✓</span>Live safety alerts</div>
+        <div class="price-feature"><span class="price-feature-icon">✓</span>Roadside assistance (3/month)</div>
+        <div class="price-feature"><span class="price-feature-icon">✓</span>Ride logging (last 10 rides)</div>
+        <div class="price-feature"><span class="price-feature-icon">✓</span>DigiLocker connection</div>
+        <div class="price-feature"><span class="price-feature-x">○</span><span style="color:var(--text2)">AI Ride Planner</span></div>
+        <div class="price-feature"><span class="price-feature-x">○</span><span style="color:var(--text2)">Advanced scenic routing</span></div>
+        <div class="price-feature"><span class="price-feature-x">○</span><span style="color:var(--text2)">Group ride tools</span></div>
+        <div class="price-feature"><span class="price-feature-x">○</span><span style="color:var(--text2)">Premium fuel filter</span></div>
+        <button class="btn-ghost" style="width:100%;margin-top:1.5rem" onclick="showToast('You are already on Free plan!','✅')">Current Plan</button>
+      </div>
+      <div class="price-card featured">
+        <div class="price-featured-badge">MOST POPULAR</div>
+        <div class="price-plan" style="color:var(--orange2)">MOTO PRO</div>
+        <div class="price-amount" style="background:linear-gradient(135deg,var(--orange),var(--orange2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">₹199<span>/mo</span></div>
+        <div class="price-period">₹1,799/year · Save 25%</div>
+        <div class="price-feature"><span class="price-feature-icon">✓</span>Everything in Free</div>
+        <div class="price-feature"><span class="price-feature-icon">✓</span>🤖 AI Ride Planner (unlimited)</div>
+        <div class="price-feature"><span class="price-feature-icon">✓</span>Advanced scenic + elevation routing</div>
+        <div class="price-feature"><span class="price-feature-icon">✓</span>Group ride tools (unlimited)</div>
+        <div class="price-feature"><span class="price-feature-icon">✓</span>Premium fuel filter + price alerts</div>
+        <div class="price-feature"><span class="price-feature-icon">✓</span>Unlimited ride history</div>
+        <div class="price-feature"><span class="price-feature-icon">✓</span>Priority roadside assistance</div>
+        <div class="price-feature"><span class="price-feature-icon">✓</span>Custom route sharing pages</div>
+        <div class="price-feature"><span class="price-feature-icon">✓</span>Gamification + leaderboard</div>
+        <button class="btn-primary" style="width:100%;margin-top:1.5rem" onclick="showToast('🎉 Welcome to MotoIQ Pro!','🚀')">Upgrade to Pro</button>
+      </div>
+    </div>
+
+    <div style="text-align:center;margin-top:3rem">
+      <div class="section-label" style="margin-bottom:1rem">INCLUDED IN EVERY PLAN</div>
+      <div style="display:flex;flex-wrap:wrap;gap:1rem;justify-content:center">
+        <div class="glass-card" style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem 1.25rem;flex-direction:row">
+          <span>🔒</span><span style="font-size:0.85rem">End-to-end encryption</span>
+        </div>
+        <div class="glass-card" style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem 1.25rem;flex-direction:row">
+          <span>🌐</span><span style="font-size:0.85rem">Offline route access</span>
+        </div>
+        <div class="glass-card" style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem 1.25rem;flex-direction:row">
+          <span>📱</span><span style="font-size:0.85rem">Android + iOS app</span>
+        </div>
+        <div class="glass-card" style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem 1.25rem;flex-direction:row">
+          <span>🆘</span><span style="font-size:0.85rem">Emergency SOS (always free)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     PAGE 12: CONTACT / COMMUNITY
+══════════════════════════════════════ -->
+<div class="page" id="page-contact">
+  <div class="page-header">
+    <div class="section-label">COMMUNITY & CONTACT</div>
+    <div class="section-title">Join the ride. Be the tribe.</div>
+    <p class="text-muted" style="margin-top:0.5rem">42,000+ riders and growing. Be part of India's smartest riding community.</p>
+  </div>
+  <div class="section">
+    <div class="grid-2">
+      <div>
+        <div class="section-label" style="margin-bottom:1rem">JOIN THE COMMUNITY</div>
+        <div class="social-link" onclick="showToast('Opening Instagram...','📸')">
+          <div class="social-icon" style="background:linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045)">📸</div>
+          <div><div class="fw-bold">Instagram</div><div class="text-muted" style="font-size:0.8rem">@motoiq.india · 28K followers</div></div>
+          <span class="badge badge-orange" style="margin-left:auto">Follow</span>
+        </div>
+        <div class="social-link" onclick="showToast('Opening YouTube...','▶️')">
+          <div class="social-icon" style="background:rgba(255,0,0,0.2)">▶️</div>
+          <div><div class="fw-bold">YouTube</div><div class="text-muted" style="font-size:0.8rem">MotoIQ India · Route videos + tutorials</div></div>
+          <span class="badge badge-cyan" style="margin-left:auto">Subscribe</span>
+        </div>
+        <div class="social-link" onclick="showToast('Opening Discord...','💬')">
+          <div class="social-icon" style="background:rgba(88,101,242,0.2)">💬</div>
+          <div><div class="fw-bold">Discord</div><div class="text-muted" style="font-size:0.8rem">Active community · #route-planning</div></div>
+          <span class="badge badge-cyan" style="margin-left:auto">Join</span>
+        </div>
+        <div class="social-link" onclick="showToast('Opening WhatsApp group...','🟢')">
+          <div class="social-icon" style="background:rgba(37,211,102,0.15)">🟢</div>
+          <div><div class="fw-bold">WhatsApp Rider Groups</div><div class="text-muted" style="font-size:0.8rem">City-wise groups: Pune, Mumbai, Bangalore...</div></div>
+          <span class="badge badge-green" style="margin-left:auto">Join</span>
+        </div>
+
+        <div class="glass-card" style="margin-top:1.5rem;text-align:center;padding:2rem">
+          <div style="font-size:3rem;margin-bottom:0.75rem">🏍</div>
+          <div class="section-title" style="font-size:1.5rem;margin-bottom:0.5rem">42,000+ Riders</div>
+          <div class="text-muted" style="font-size:0.85rem">From Leh to Kanyakumari. From ghats to highways.</div>
+          <div style="margin-top:1rem;display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap">
+            <span class="badge badge-orange">Maharashtra</span>
+            <span class="badge badge-cyan">Karnataka</span>
+            <span class="badge badge-green">Goa</span>
+            <span class="badge badge-orange">Kerala</span>
+            <span class="badge badge-cyan">Rajasthan</span>
+            <span class="badge badge-yellow">Himachal</span>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="section-label" style="margin-bottom:1rem">SEND US A MESSAGE</div>
+        <div class="glass-card">
+          <div class="form-group">
+            <label class="form-label">YOUR NAME</label>
+            <input class="form-input" placeholder="e.g. Salaar">
+          </div>
+          <div class="form-group">
+            <label class="form-label">EMAIL</label>
+            <input class="form-input" type="email" placeholder="rider@example.com">
+          </div>
+          <div class="form-group">
+            <label class="form-label">SUBJECT</label>
+            <input class="form-input" placeholder="Feature request, bug report, partnership...">
+          </div>
+          <div class="form-group">
+            <label class="form-label">MESSAGE</label>
+            <textarea class="form-input" placeholder="Tell us what's on your mind..."></textarea>
+          </div>
+          <button class="btn-primary" style="width:100%" onclick="showToast('📨 Message sent! We\'ll reply within 24 hrs.','✅')">Send Message 🚀</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+// ══════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  const link = document.querySelector('[data-page="' + id + '"]');
+  if (link) link.classList.add('active');
+  window.scrollTo(0, 0);
+
+  // Page-specific logic
+  if (id === 'safety') fetchWeather();
+  if (id === 'nav-page') animateMapRoute();
+  if (id === 'group') startGroupAnimation();
+}
+
+// ══════════════════════════════════════
+// LOADING SCREEN
+// ══════════════════════════════════════
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    const el = document.getElementById('loading');
+    el.style.opacity = '0';
+    el.style.transform = 'scale(1.05)';
+    setTimeout(() => el.style.display = 'none', 500);
+  }, 1800);
+
+  // Show notification after 4s
+  setTimeout(() => {
+    const n = document.getElementById('notif');
+    n.classList.add('show');
+    setTimeout(() => n.classList.remove('show'), 5000);
+  }, 4000);
+});
+
+// ══════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════
+function showToast(msg, icon = '✅') {
+  const t = document.getElementById('toast');
+  document.getElementById('toast-msg').textContent = msg;
+  document.getElementById('toast-icon').textContent = icon;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+// ══════════════════════════════════════
+// WEATHER — Real API
+// ══════════════════════════════════════
+async function fetchWeather() {
+  const city = 'Pune';
+  const apiKey = 'demo'; // demo mode
+  
+  // Simulate realistic weather for Pune
+  const weatherData = {
+    temp: 31,
+    feels_like: 34,
+    humidity: 58,
+    wind: 14,
+    visibility: 10,
+    desc: 'Partly Cloudy',
+    emoji: '⛅',
+    rain: false
+  };
+
+  try {
+    // Try real API
+    const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=Pune,IN&appid=YOUR_KEY&units=metric`, { signal: AbortSignal.timeout(3000) });
+    if (res.ok) {
+      const d = await res.json();
+      weatherData.temp = Math.round(d.main.temp);
+      weatherData.humidity = d.main.humidity;
+      weatherData.wind = Math.round(d.wind.speed * 3.6);
+      weatherData.visibility = Math.round(d.visibility / 1000);
+      weatherData.desc = d.weather[0].description;
+    }
+  } catch(e) { /* use simulated */ }
+
+  document.getElementById('weather-temp').textContent = weatherData.temp + '°C';
+  document.getElementById('weather-city').textContent = city + ', Maharashtra';
+  document.getElementById('weather-desc').textContent = weatherData.desc;
+  document.getElementById('weather-emoji').textContent = weatherData.emoji;
+  document.getElementById('weather-humidity').textContent = weatherData.humidity + '%';
+  document.getElementById('weather-wind').textContent = weatherData.wind + ' km/h';
+  document.getElementById('weather-vis').textContent = weatherData.visibility + ' km';
+
+  document.getElementById('weather-json').innerHTML = `{<br>
+&nbsp;&nbsp;<span class="json-key">"city"</span>: <span class="json-string">"${city}"</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"temp"</span>: <span class="json-num">${weatherData.temp}</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"humidity"</span>: <span class="json-num">${weatherData.humidity}</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"wind_kmh"</span>: <span class="json-num">${weatherData.wind}</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"visibility_km"</span>: <span class="json-num">${weatherData.visibility}</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"rain_warning"</span>: <span class="json-bool">${weatherData.rain}</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"ride_safe"</span>: <span class="json-bool">true</span><br>
+}`;
+
+  if (weatherData.wind > 40 || weatherData.rain) {
+    const wa = document.getElementById('weather-alert');
+    wa.style.display = 'block';
+    wa.textContent = '⚠️ High winds detected. Ride with extra caution.';
+  }
+}
+
+// ══════════════════════════════════════
+// ROUTE SIMULATION
+// ══════════════════════════════════════
+function simulateRoute() {
+  showToast('🗺 Calculating your optimal route...', '🧭');
+  setTimeout(() => {
+    document.getElementById('route-result').style.display = 'block';
+    showToast('✅ Route calculated! 148km · 3h 20m via Lonavala', '🎉');
+    animateMapRoute();
+  }, 1200);
+}
+
+function animateMapRoute() {
+  const route = document.getElementById('map-route');
+  if (!route) return;
+  route.style.strokeDashoffset = '800';
+  route.style.transition = 'stroke-dashoffset 2s ease';
+  setTimeout(() => route.style.strokeDashoffset = '0', 100);
+
+  // Animate bike dot
+  const bike = document.getElementById('bikeDot');
+  const ping = document.getElementById('bikePing');
+  if (!bike) return;
+  const points = [{x:50,y:330},{x:100,y:298},{x:190,y:210},{x:260,y:180},{x:330,y:168},{x:420,y:135},{x:510,y:95},{x:560,y:70}];
+  let idx = 0;
+  const animate = setInterval(() => {
+    if (idx >= points.length) { idx = 0; return; }
+    const p = points[idx++];
+    bike.setAttribute('cx', p.x);
+    bike.setAttribute('cy', p.y);
+    ping.setAttribute('cx', p.x);
+    ping.setAttribute('cy', p.y);
+  }, 600);
+}
+
+function selectMode(el) {
+  document.querySelectorAll('#page-nav-page .map-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function filterFuel(el, mode) {
+  document.querySelectorAll('#page-fuel .map-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  showToast('Filtering fuel stations: ' + mode, '⛽');
+}
+
+// ══════════════════════════════════════
+// GROUP RIDE ANIMATION
+// ══════════════════════════════════════
+let groupInterval;
+function startGroupAnimation() {
+  clearInterval(groupInterval);
+  const riders = [
+    {id:'r1',id2:'r1p',path:[{x:120,y:258},{x:135,y:248},{x:150,y:238}]},
+    {id:'r2',id2:'r2p',path:[{x:200,y:220},{x:215,y:212},{x:230,y:204}]},
+    {id:'r3',id2:'r3p',path:[{x:260,y:192},{x:275,y:184},{x:290,y:176}]},
+  ];
+  let step = 0;
+  groupInterval = setInterval(() => {
+    step = (step+1)%3;
+    riders.forEach(r => {
+      const el = document.getElementById(r.id);
+      const elp = document.getElementById(r.id2);
+      if(!el) return;
+      const p = r.path[step];
+      el.setAttribute('cx', p.x);
+      el.setAttribute('cy', p.y);
+      if(elp){elp.setAttribute('cx',p.x);elp.setAttribute('cy',p.y);}
+    });
+  }, 1500);
+}
+
+// ══════════════════════════════════════
+// SOS
+// ══════════════════════════════════════
+function triggerSOS() {
+  showToast('🆘 SOS SENT! Emergency contacts notified. Nearest hospital: 2.3km away.', '🆘');
+}
+
+// ══════════════════════════════════════
+// DIGILOCKER MODAL
+// ══════════════════════════════════════
+function openDLModal() {
+  document.getElementById('dl-modal').classList.add('show');
+}
+function closeDLModal() {
+  document.getElementById('dl-modal').classList.remove('show');
+}
+function fetchDLDocs() {
+  closeDLModal();
+  showToast('🔐 Connecting to DigiLocker...', '🔄');
+  setTimeout(() => {
+    document.getElementById('doc-cards-locked').style.display = 'none';
+    document.getElementById('doc-cards-unlocked').style.display = 'block';
+    document.getElementById('dl-status').textContent = 'connected';
+    showToast('✅ DigiLocker connected! 4 documents fetched.', '🎉');
+  }, 2000);
+}
+
+// ══════════════════════════════════════
+// AI CHAT
+// ══════════════════════════════════════
+const aiResponses = {
+  default: [
+    "🗺 Great choice! Based on your preferences, I recommend the **Pune → Tamhini Ghat → Mulshi** route. It's 120km of pure joy with 52 curves, 680m elevation, and a beautiful lake view at the end.",
+    "⭐ Route Stats:\n• Distance: 120 km\n• Duration: ~3h 15m\n• Scenic Score: 9.4/10\n• Difficulty: Moderate\n• Best time: 7–10 AM",
+    "🛢 Fuel stops: HP Speed at Wakad (0.8km off route), Lonavala pump mid-route\n☕ Recommended café: Green Valley Café, Tamhini — breathtaking view, amazing chai!\n⚠️ Note: Tamhini Ghat can have foggy conditions before 9 AM."
+  ]
+};
+
+let chatStep = 0;
+const rideTypes = {
+  scenic: "I recommend the **Pune → Tamhini Ghat → Mulshi** route. 120km, 9.4/10 scenic score, 52 curves.",
+  curvy: "For maximum curves, try **Pune → Malshej Ghat → Bhimashankar**! 180km with 90+ curves and incredible forest views.",
+  fast: "For speed: **Pune → Mumbai Expressway via Lonavala** — 150km, straight and fast with great ghat views en route.",
+  group: "For groups, **Pune → Mahabaleshwar via Panchgani** is perfect — wide roads, clear waypoints, great group stops.",
+  sunrise: "For sunrise: **Sinhagad Fort approach** — 24km from Pune centre, arrives at peak viewpoint just in time for 6 AM sunrise. 🌅"
+};
+
+async function sendChat() {
+  const input = document.getElementById('chat-input');
+  const msg = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+
+  const msgs = document.getElementById('chat-messages');
+  
+  // User message
+  const userDiv = document.createElement('div');
+  userDiv.className = 'msg msg-user';
+  userDiv.textContent = msg;
+  msgs.appendChild(userDiv);
+  msgs.scrollTop = msgs.scrollHeight;
+
+  // Typing indicator
+  const typingDiv = document.createElement('div');
+  typingDiv.className = 'msg msg-ai typing';
+  typingDiv.innerHTML = '<span></span><span></span><span></span>';
+  msgs.appendChild(typingDiv);
+  msgs.scrollTop = msgs.scrollHeight;
+
+  // Detect intent
+  const lower = msg.toLowerCase();
+  let response = "I've generated a personalized route based on your request! Here's what I recommend:\n\n🗺 " + 
+    (lower.includes('scenic') || lower.includes('mountain') ? rideTypes.scenic :
+     lower.includes('curv') || lower.includes('ghat') ? rideTypes.curvy :
+     lower.includes('fast') || lower.includes('quick') ? rideTypes.fast :
+     lower.includes('group') ? rideTypes.group :
+     lower.includes('sunrise') || lower.includes('morning') ? rideTypes.sunrise :
+     "**Pune → Lonavala Scenic Loop** — 148km, 8.4/10 fun score, via Khandala Ghat.");
+
+  await new Promise(r => setTimeout(r, 1200 + Math.random()*800));
+
+  // Remove typing, add response
+  typingDiv.remove();
+  const aiDiv = document.createElement('div');
+  aiDiv.className = 'msg msg-ai';
+  aiDiv.textContent = response;
+  msgs.appendChild(aiDiv);
+  msgs.scrollTop = msgs.scrollHeight;
+
+  // Update AI route output
+  updateAIRoute(msg, response);
+}
+
+function quickPrompt(text) {
+  document.getElementById('chat-input').value = text;
+  sendChat();
+}
+
+function updateAIRoute(prompt, response) {
+  document.getElementById('ai-route-output').innerHTML = `
+    <div class="alert-item success" style="margin-bottom:1rem">
+      <div class="alert-icon">✅</div>
+      <div>
+        <div class="alert-title">Route Generated Successfully</div>
+        <div class="alert-desc">AI analysed 3,412 routes to find your best match.</div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem">
+      <div class="glass-card" style="padding:0.75rem;text-align:center">
+        <div style="font-family:'Exo 2',sans-serif;font-weight:900;color:var(--orange);font-size:1.3rem">148km</div>
+        <div style="font-size:0.7rem;color:var(--text2)">Distance</div>
+      </div>
+      <div class="glass-card" style="padding:0.75rem;text-align:center">
+        <div style="font-family:'Exo 2',sans-serif;font-weight:900;color:var(--cyan);font-size:1.3rem">9.1/10</div>
+        <div style="font-size:0.7rem;color:var(--text2)">Fun Score</div>
+      </div>
+    </div>
+    <div style="margin-top:0.75rem;padding:0.75rem;background:rgba(255,92,26,0.06);border-radius:10px;border:1px solid rgba(255,92,26,0.15);font-size:0.8rem;color:var(--text2)">
+      🤖 AI suggests: <strong style="color:var(--orange2)">Depart by 7 AM</strong> for best light conditions and minimal traffic on ghat roads.
+    </div>`;
+
+  document.getElementById('ai-json-block').innerHTML = `{<br>
+&nbsp;&nbsp;<span class="json-key">"model"</span>: <span class="json-string">"gpt-4-turbo"</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"prompt"</span>: <span class="json-string">"${prompt.substring(0,40)}..."</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"tokens_used"</span>: <span class="json-num">384</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"routes_analysed"</span>: <span class="json-num">3412</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"confidence"</span>: <span class="json-num">0.94</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"status"</span>: <span class="json-string">"success"</span><br>
+}`;
+}
+
+// Init map route on load
+setTimeout(() => animateMapRoute(), 2000);
+</script>
+</body>
+</html>

@@ -1,0 +1,1427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MOTOIQ — Not the fastest route. The best ride.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<!-- Tailwind -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          bg: '#07080D',
+          bg2: '#0D0F1A',
+          primary: '#FF5C1A',
+          primary2: '#FF8C42',
+          secondary: '#00D4FF',
+          success: '#00FF88',
+          danger: '#FF3D3D',
+          warning: '#FFD600',
+          textMuted: '#8A8FA8'
+        },
+        fontFamily: {
+          sans: ['DM Sans', 'sans-serif'],
+          exo: ['Exo 2', 'sans-serif'],
+          mono: ['JetBrains Mono', 'monospace']
+        }
+      }
+    }
+  }
+</script>
+<!-- GSAP -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-bg text-white antialiased overflow-x-hidden">
+
+<!-- FILM GRAIN LAYER -->
+<svg class="pointer-events-none fixed inset-0 z-50 h-full w-full opacity-[0.05] mix-blend-overlay">
+  <filter id="noiseFilter">
+    <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch" />
+  </filter>
+  <rect width="100%" height="100%" filter="url(#noiseFilter)" />
+</svg>
+
+<!-- LOADING SCREEN -->
+<div id="loading">
+  <div class="loading-logo">MOTO<span>IQ</span></div>
+  <div class="loading-bar-wrap"><div class="loading-bar"></div></div>
+  <div class="loading-text">INITIALIZING RIDE SYSTEMS...</div>
+</div>
+
+<!-- NOTIFICATION POPUP -->
+<div class="notif-popup" id="notif">
+  <div style="font-size:1.4rem">⚠️</div>
+  <div>
+    <div class="notif-title">Speed Zone Ahead</div>
+    <div class="notif-desc">You're approaching a 40 km/h zone in 400m. Slow down.</div>
+  </div>
+</div>
+
+<!-- DIGILOCKER MODAL -->
+<div id="dl-modal">
+  <div class="dl-modal-inner">
+    <div style="font-size:2rem;margin-bottom:0.75rem">🔐</div>
+    <div class="dl-modal-title">DigiLocker Login</div>
+    <div class="dl-modal-sub">Enter your credentials to fetch your documents securely</div>
+    <input class="dl-input" placeholder="Mobile Number / Aadhaar" type="text">
+    <input class="dl-input" placeholder="OTP / Password" type="password">
+    <div class="dl-row">
+      <button class="btn-ghost" onclick="closeDLModal()" style="flex:1;padding:0.75rem;font-size:0.85rem">Cancel</button>
+      <button class="btn-primary" onclick="fetchDLDocs()" style="flex:1;padding:0.75rem;font-size:0.85rem">Connect</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast">
+  <span id="toast-icon">✅</span>
+  <span id="toast-msg">Done!</span>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo" onclick="showPage('home')">MOTO<span>IQ</span></div>
+  <div class="nav-links">
+    <div class="nav-link active" data-page="home" onclick="showPage('home')">🏠 Home</div>
+    <div class="nav-link" data-page="nav-page" onclick="showPage('nav-page')">🧭 Navigate</div>
+    <div class="nav-link" data-page="safety" onclick="showPage('safety')">⚠️ Safety</div>
+    <div class="nav-link" data-page="assist" onclick="showPage('assist')">🛠 Assist</div>
+    <div class="nav-link" data-page="fuel" onclick="showPage('fuel')">⛽ Fuel</div>
+    <div class="nav-link" data-page="group" onclick="showPage('group')">👥 Group</div>
+    <div class="nav-link" data-page="ai" onclick="showPage('ai')">🤖 AI Planner</div>
+    <div class="nav-link" data-page="digi" onclick="showPage('digi')">🔐 DigiLocker</div>
+    <div class="nav-link" data-page="stats" onclick="showPage('stats')">📊 Stats</div>
+    <div class="nav-link" data-page="contact" onclick="showPage('contact')">📞 Community</div>
+  </div>
+  <button class="nav-cta" onclick="showPage('nav-page')">PLAN RIDE ›</button>
+</nav>
+
+<!-- ══════════════════════════════════════
+     PAGE 1: HOME
+══════════════════════════════════════ -->
+<div class="page active" id="page-home">
+
+  <!-- Cinematic 3D Scrollytelling Section -->
+  <section class="scrolly-wrapper relative" style="height: 500vh;">
+    <div class="scrolly-sticky sticky top-0 h-[100vh] w-full overflow-hidden flex justify-center items-center bg-black">
+      <!-- Image Sequence Canvas -->
+      <canvas id="frameCanvas" class="absolute inset-0 w-full h-full object-cover"></canvas>
+      
+      <!-- Film Grain Overlay within Canvas -->
+      <div class="absolute inset-0 pointer-events-none opacity-20 mix-blend-overlay" style="background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E');"></div>
+
+      <!-- Overlay Texts -->
+      <div id="scrolly-overlays" class="absolute inset-0 pointer-events-none flex flex-col items-center justify-center z-10">
+        <!-- Phase 1 -->
+        <div id="phase1" class="absolute text-center flex flex-col items-center justify-center opacity-0 translate-y-10">
+          <h2 class="font-exo font-black text-5xl sm:text-7xl text-white tracking-tight drop-shadow-2xl">MOTOIQ</h2>
+          <p class="text-textMuted text-xl sm:text-2xl font-light mt-2 drop-shadow-md">Not the fastest route.</p>
+        </div>
+        <!-- Phase 2 -->
+        <div id="phase2" class="absolute text-center flex flex-col items-center justify-center opacity-0 translate-y-10">
+          <h2 class="font-exo font-black text-5xl sm:text-7xl text-transparent bg-clip-text bg-gradient-to-r from-primary via-primary2 to-secondary tracking-tight drop-shadow-2xl">The Best Ride.</h2>
+          <p class="text-textMuted text-xl sm:text-2xl font-light mt-2 drop-shadow-md">AI-powered riding OS</p>
+        </div>
+        <!-- Phase 3 -->
+        <div id="phase3" class="absolute text-center flex flex-col items-center justify-center opacity-0 translate-y-10">
+          <h2 class="font-exo font-black text-5xl sm:text-7xl text-white tracking-tight drop-shadow-2xl">Real-time intelligence</h2>
+          <p class="text-textMuted text-xl sm:text-2xl font-light mt-2 drop-shadow-md">Built for riders</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Hero -->
+  <!-- Cinematic Hero -->
+  <div class="hero flex flex-col items-center justify-center relative min-h-[calc(100vh-64px)] overflow-hidden">
+    <!-- Blueprint Fading Grid -->
+    <div class="fading-grid absolute inset-0"></div>
+
+    <div class="z-10 flex flex-col items-center text-center px-4 max-w-4xl mx-auto mt-20">
+      <div class="hero-badge font-mono text-[10px] sm:text-xs text-primary2 tracking-widest bg-orange-500/10 border border-orange-500/30 px-4 py-1.5 rounded-full flex items-center gap-2 mb-8 uppercase">
+        <div class="pulse-dot w-2 h-2 rounded-full bg-success shadow-[0_0_8px_rgba(0,255,136,0.6)]"></div>
+        India's Next-Gen Riding OS
+      </div>
+
+      <h1 class="hero-title font-exo font-black text-5xl sm:text-7xl lg:text-8xl leading-none mb-6 text-white tracking-tight">
+        Not the fastest route.<br/>
+        <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary via-primary2 to-secondary inline-block mt-2">The Best Ride.</span>
+      </h1>
+      
+      <p class="hero-sub text-textMuted text-lg sm:text-xl max-w-2xl font-light mb-10 leading-relaxed">
+        AI-powered routes, cinematic telemetry, and crowdsourced hazard detection—engineered exclusively for motorcycle enthusiasts.
+      </p>
+
+      <div class="hero-btns flex gap-4 w-full sm:w-auto flex-col sm:flex-row justify-center relative z-20">
+        <button class="btn-primary" onclick="showPage('nav-page')">🗺 Initialize Console</button>
+        <button class="btn-ghost" onclick="showPage('digi')">🔐 DigiLocker Auth</button>
+      </div>
+    </div>
+
+    <!-- 3D CSS Hardware Mockup Animation -->
+    <div class="perspective-container w-full max-w-3xl mt-16 pb-20 relative z-10" style="perspective: 1200px;">
+      <div class="css-hardware hardware-unfold relative mx-auto bg-bg2 rounded-[40px] border border-white/10 overflow-hidden w-[320px] sm:w-[400px] h-[600px] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.8),_inset_0_-2px_6px_rgba(255,255,255,0.1),_inset_0_2px_4px_rgba(255,255,255,0.05)] ring-1 ring-white/5">
+        <!-- Dynamic Lighting Sheen Layer (driven by JS) -->
+        <div class="dynamic-sheen absolute inset-0 pointer-events-none opacity-40 mix-blend-screen transition-opacity duration-300"></div>
+        
+        <!-- Hardware Bezels & Details -->
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[120px] h-[30px] bg-black rounded-b-[20px] z-50 flex justify-center items-center shadow-[0_4px_10px_rgba(0,0,0,0.5)] border-b border-white/5">
+          <div class="w-16 h-1.5 rounded-full bg-[#111] overflow-hidden relative">
+             <div class="absolute inset-0 bg-green-500/20 blur-[1px]"></div>
+             <div class="w-1.5 h-1.5 rounded-full bg-green-400 absolute right-1 shadow-[0_0_5px_#00FF88]"></div>
+          </div>
+        </div>
+
+        <!-- UI Render inside Hardware -->
+        <div class="w-full h-full bg-bg relative p-4 pt-12 overflow-hidden">
+          <!-- Mini SVG Map -->
+          <div class="absolute inset-0 opacity-40">
+             <svg width="100%" height="100%" viewBox="0 0 400 600">
+                <path d="M 50 550 C 120 450 150 350 220 300 C 290 250 300 200 280 150 C 260 100 200 50 250 -50" stroke="rgba(0,212,255,0.3)" stroke-width="6" fill="none" stroke-linecap="round"/>
+                <path d="M 50 550 C 120 450 150 350 220 300 C 290 250 300 200 280 150 C 260 100 200 50 250 -50" stroke="var(--cyan)" stroke-width="3" fill="none" stroke-linecap="round" stroke-dasharray="10 6" class="animate-pulse"/>
+                <!-- Glow Dot -->
+                <circle cx="220" cy="300" r="8" fill="var(--orange)" class="animate-bounce shadow-[0_0_15px_#FF5C1A]"/>
+             </svg>
+          </div>
+          
+          <!-- Mockup Widgets -->
+          <div class="glass-premium mt-6 p-4 rounded-2xl border border-white/10 shadow-lg relative z-20 transform transition hover:-translate-y-1">
+             <div class="font-mono text-[10px] text-secondary tracking-widest mb-1 uppercase">Next Turn : Lonavala</div>
+             <div class="font-exo font-bold text-3xl text-white">4.2 KM <span class="text-orange-500 text-lg">↗ L</span></div>
+          </div>
+
+          <div class="flex gap-4 mt-4 w-full relative z-20">
+             <div class="glass-premium p-4 rounded-2xl flex-1 flex flex-col justify-center items-center">
+                 <div class="relative w-16 h-16 rounded-full border-[3px] border-black/50 overflow-hidden flex justify-center items-center shadow-[inset_0_4px_6px_rgba(0,0,0,0.6)]">
+                    <svg class="absolute inset-0 w-full h-full -rotate-90">
+                       <circle cx="32" cy="32" r="28" fill="none" stroke="rgba(255,92,26,0.2)" stroke-width="4"></circle>
+                       <circle cx="32" cy="32" r="28" fill="none" stroke="var(--orange)" stroke-width="4" stroke-dasharray="176" stroke-dashoffset="60" class="drop-shadow-[0_0_6px_#FF5C1A]"></circle>
+                    </svg>
+                    <span class="font-exo font-bold text-xl text-white z-10">94</span>
+                 </div>
+                 <div class="text-[10px] text-textMuted font-mono mt-2">SPEED</div>
+             </div>
+             
+             <div class="glass-premium p-4 rounded-2xl flex-1 flex flex-col justify-center items-center">
+                 <div class="text-secondary text-2xl font-bold font-exo mb-1 animate-pulse">8.5k</div>
+                 <div class="text-[10px] text-textMuted font-mono">RPM</div>
+             </div>
+          </div>
+        </div>
+        
+        <!-- Screen Glare Overlay -->
+        <div class="absolute inset-0 pointer-events-none bg-gradient-to-tr from-white/0 via-white/5 to-white/0 transform -rotate-45 translate-x-1/3 scale-150 mix-blend-overlay"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats Bar -->
+  <div class="stats-bar">
+    <div class="stats-bar-item"><div class="stats-bar-num">42K+</div><div class="stats-bar-lbl">Active Riders</div></div>
+    <div class="stats-bar-item"><div class="stats-bar-num">8.2M</div><div class="stats-bar-lbl">KM Mapped</div></div>
+    <div class="stats-bar-item"><div class="stats-bar-num">3,400+</div><div class="stats-bar-lbl">Scenic Routes</div></div>
+    <div class="stats-bar-item"><div class="stats-bar-num">98.2%</div><div class="stats-bar-lbl">Safety Score</div></div>
+    <div class="stats-bar-item"><div class="stats-bar-num">12+</div><div class="stats-bar-lbl">API Integrations</div></div>
+  </div>
+
+  <!-- Features -->
+  <div class="section">
+    <div class="section-label">CORE FEATURES</div>
+    <div class="section-title">Everything a rider needs</div>
+    <p class="section-sub" style="margin-bottom:2.5rem">One platform. Real APIs. Designed for Indian roads and adventure seekers.</p>
+
+    <div class="grid-3">
+      <div class="glass-card">
+        <div class="feat-icon" style="background:rgba(255,92,26,0.12);">🧭</div>
+        <div class="feat-title">Smart Navigation</div>
+        <div class="feat-desc">Scenic route optimization with elevation curves and curvy-road detection powered by Mapbox.</div>
+        <div style="margin-top:1rem"><span class="badge badge-orange">Mapbox API</span></div>
+      </div>
+      <div class="glass-card">
+        <div class="feat-icon" style="background:rgba(255,214,0,0.1);">⚠️</div>
+        <div class="feat-title">Real-time Alerts</div>
+        <div class="feat-desc">Speed zones, accident-prone areas, live weather warnings fetched from OpenWeatherMap.</div>
+        <div style="margin-top:1rem"><span class="badge badge-yellow">Weather API</span></div>
+      </div>
+      <div class="glass-card">
+        <div class="feat-icon" style="background:rgba(0,212,255,0.1);">🤖</div>
+        <div class="feat-title">AI Ride Planner</div>
+        <div class="feat-desc">Tell the AI your mood, distance, and preferences — it builds the perfect route suggestion.</div>
+        <div style="margin-top:1rem"><span class="badge badge-cyan">OpenAI API</span></div>
+      </div>
+      <div class="glass-card">
+        <div class="feat-icon" style="background:rgba(0,255,136,0.08);">🔐</div>
+        <div class="feat-title">DigiLocker Integration</div>
+        <div class="feat-desc">Fetch your DL, RC, and Insurance directly. No paperwork needed at checkpoints.</div>
+        <div style="margin-top:1rem"><span class="badge badge-green">Gov API</span></div>
+      </div>
+      <div class="glass-card">
+        <div class="feat-icon" style="background:rgba(255,92,26,0.12);">👥</div>
+        <div class="feat-title">Group Ride Mode</div>
+        <div class="feat-desc">Live rider tracking on a shared map. Ride Marshal dashboard. Instant buddy alerts.</div>
+        <div style="margin-top:1rem"><span class="badge badge-orange">WebSocket</span></div>
+      </div>
+      <div class="glass-card">
+        <div class="feat-icon" style="background:rgba(0,212,255,0.1);">⛽</div>
+        <div class="feat-title">Fuel & Stops</div>
+        <div class="feat-desc">Real-time petrol pump locator, live fuel prices, and biker-friendly café discovery.</div>
+        <div style="margin-top:1rem"><span class="badge badge-cyan">Foursquare API</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- How it works -->
+  <div style="background:var(--bg2); border-top:1px solid var(--border); border-bottom:1px solid var(--border);">
+    <div class="section">
+      <div class="section-label">HOW IT WORKS</div>
+      <div class="section-title" style="margin-bottom:2.5rem">Ride in 4 simple steps</div>
+      <div class="step-row">
+        <div class="step-item">
+          <div class="step-num">01</div>
+          <div class="step-title">Create Profile</div>
+          <div class="step-desc">Sign up, link your bike details, and connect DigiLocker for paperless rides.</div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">02</div>
+          <div class="step-title">Plan Route</div>
+          <div class="step-desc">Use AI Planner or Smart Nav to generate scenic, safe, optimized routes.</div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">03</div>
+          <div class="step-title">Ride Smart</div>
+          <div class="step-desc">Receive live alerts, weather updates, and safety warnings along the way.</div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">04</div>
+          <div class="step-title">Share & Earn</div>
+          <div class="step-desc">Log your ride, earn badges, share your journey, and grow your rider rep.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tech Stack Preview -->
+  <div class="section">
+    <div class="section-label">TECH ARCHITECTURE</div>
+    <div class="section-title" style="margin-bottom:1rem">Enterprise-grade. College-built.</div>
+    <p class="section-sub" style="margin-bottom:2rem">Full-stack MVP using Node.js, MongoDB, and live API integrations.</p>
+    <div class="arch-flow">
+      <div class="arch-node highlight-orange">React Frontend<div class="arch-node-label">UI / PWA</div></div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-node highlight-cyan">Node.js Backend<div class="arch-node-label">Express REST API</div></div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-node highlight-green">MongoDB<div class="arch-node-label">NoSQL Database</div></div>
+    </div>
+    <div style="text-align:center;margin-top:1.5rem;display:flex;flex-wrap:wrap;gap:0.75rem;justify-content:center;">
+      <span class="badge badge-orange">Mapbox</span>
+      <span class="badge badge-cyan">OpenWeatherMap</span>
+      <span class="badge badge-green">DigiLocker</span>
+      <span class="badge badge-orange">Foursquare</span>
+      <span class="badge badge-cyan">OpenAI</span>
+      <span class="badge badge-yellow">WebSockets</span>
+      <span class="badge badge-green">JWT Auth</span>
+    </div>
+    <div style="text-align:center;margin-top:2rem">
+      <button class="btn-ghost" onclick="showPage('arch')">View Full Architecture →</button>
+    </div>
+  </div>
+
+</div>
+
+
+<!-- ══════════════════════════════════════
+     PAGE 2: SMART NAVIGATION
+══════════════════════════════════════ -->
+<div class="page" id="page-nav-page">
+  <div class="page-header">
+    <div class="section-label">SMART NAVIGATION</div>
+    <div class="section-title">Find the best ride, not the fastest one</div>
+    <p class="text-muted" style="margin-top:0.5rem;">Powered by Mapbox + OpenRouteService API</p>
+  </div>
+  <div class="section">
+    <div class="grid-2" style="gap:2rem">
+      <!-- Left: Route Planner -->
+      <div>
+        <div class="glass-card mb-1" style="margin-bottom:1rem">
+          <div class="feat-title mb-1" style="margin-bottom:1rem">Route Planner</div>
+          <div style="margin-bottom:0.75rem">
+            <div class="form-label">From</div>
+            <input id="start-location" class="form-input" value="Pune, Maharashtra" placeholder="Start location">
+          </div>
+          <div style="margin-bottom:0.75rem">
+            <div class="form-label">To</div>
+            <input id="end-location" class="form-input" value="Mumbai, Maharashtra" placeholder="Destination">
+          </div>
+          <div style="margin-bottom:1rem">
+            <div class="form-label">Ride Mode</div>
+            <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
+              <div class="map-btn active" onclick="selectMode(this)">🎢 Fun Route</div>
+              <div class="map-btn" onclick="selectMode(this)">🏔 Scenic</div>
+              <div class="map-btn" onclick="selectMode(this)">⚡ Fast</div>
+              <div class="map-btn" onclick="selectMode(this)">🌧 Safe</div>
+            </div>
+          </div>
+          <button class="btn-primary" style="width:100%" onclick="simulateRoute()">Calculate Route</button>
+        </div>
+
+        <!-- Route Result -->
+        <div class="glass-card" id="route-result" style="display:none">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+            <div class="feat-title">Route Found ✓</div>
+            <span class="badge badge-green">OPTIMAL</span>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.75rem;text-align:center;margin-bottom:1rem">
+            <div class="glass-card" style="padding:0.75rem">
+              <div id="live-distance" style="font-family:'Exo 2',sans-serif;font-weight:900;font-size:1.3rem;color:var(--orange)">--<span style="font-size:0.8rem">km</span></div>
+              <div style="font-size:0.7rem;color:var(--text2)">Distance</div>
+            </div>
+            <div class="glass-card" style="padding:0.75rem">
+              <div id="live-duration" style="font-family:'Exo 2',sans-serif;font-weight:900;font-size:1.3rem;color:var(--cyan)">--m</div>
+              <div style="font-size:0.7rem;color:var(--text2)">Duration</div>
+            </div>
+            <div class="glass-card" style="padding:0.75rem">
+              <div style="font-family:'Exo 2',sans-serif;font-weight:900;font-size:1.3rem;color:var(--green)">8.4/10</div>
+              <div style="font-size:0.7rem;color:var(--text2)">Fun Score</div>
+            </div>
+          </div>
+          <div class="alert-item info">
+            <div class="alert-icon">🏔</div>
+            <div><div class="alert-title">Scenic Highlight</div><div class="alert-desc">Lonavala ghat section — 28 curves, 800m elevation gain. ⭐ Rider-rated 9.1/10</div></div>
+          </div>
+        </div>
+
+        <!-- API Response Preview -->
+        
+      </div>
+
+      <!-- Right: Live Google Map -->
+      <div>
+        <div class="map-container" id="main-map" style="position: relative; height: 380px;">
+          <div id="googleMapDisplay" style="width: 100%; height: 100%; border-radius: 1rem;"></div>
+          <!-- Overlays -->
+          <div class="map-overlay-info" style="pointer-events: none; z-index: 10;">
+            <div style="color:var(--cyan);font-family:'JetBrains Mono',monospace;font-size:0.7rem;margin-bottom:0.3rem">LIVE ROUTE</div>
+            <div id="live-route-title" style="font-family:'Exo 2',sans-serif;font-weight:700;font-size:0.85rem">Pune → Mumbai</div>
+            <div id="live-route-via" style="color:var(--text2);font-size:0.75rem;margin-top:0.2rem">Calculating best path...</div>
+          </div>
+          <div style="position:absolute;bottom:1.5rem;left:1rem; z-index: 10;">
+            <span class="badge badge-orange bg-black/50 backdrop-blur-md px-2 py-1 border border-orange-500/20">Powered by Google Maps</span>
+          </div>
+        </div>
+
+
+        <div class="glass-card mt-1" style="margin-top:1rem">
+          <div class="feat-title" style="margin-bottom:1rem">Elevation Profile</div>
+          <svg width="100%" height="80" viewBox="0 0 500 80">
+            <defs>
+              <linearGradient id="elevGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="var(--orange)" stop-opacity="0.4"/>
+                <stop offset="100%" stop-color="var(--orange)" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <path d="M 0 70 L 50 65 L 100 50 L 160 20 L 220 15 L 280 25 L 340 30 L 400 45 L 450 55 L 500 60 L 500 80 L 0 80 Z" fill="url(#elevGrad)"/>
+            <path d="M 0 70 L 50 65 L 100 50 L 160 20 L 220 15 L 280 25 L 340 30 L 400 45 L 450 55 L 500 60" stroke="var(--orange)" stroke-width="2" fill="none" stroke-linecap="round"/>
+            <text x="155" y="14" font-size="8" fill="var(--text2)" font-family="'JetBrains Mono',monospace">820m peak</text>
+            <text x="0" y="78" font-size="7" fill="var(--text2)" font-family="'JetBrains Mono',monospace">Pune</text>
+            <text x="460" y="78" font-size="7" fill="var(--text2)" font-family="'JetBrains Mono',monospace">Mumbai</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     PAGE 3: SAFETY & ALERTS
+══════════════════════════════════════ -->
+<div class="page" id="page-safety">
+  <div class="page-header">
+    <div class="section-label">RIDER SAFETY & ALERTS</div>
+    <div class="section-title">Know before you go</div>
+    <p class="text-muted" style="margin-top:0.5rem">Live weather + crowdsourced alerts. Your guardian on the road.</p>
+  </div>
+  <div class="section">
+    <div class="grid-2">
+      <!-- Weather Widget -->
+      <div>
+        <div class="section-label" style="margin-bottom:1rem">LIVE WEATHER STATIONS</div>
+        <div class="glass-premium rounded-[32px] p-8 text-center relative overflow-hidden border border-white/10 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.8)]" id="weather-card">
+          <!-- Ambient Weather Glow -->
+          <div class="absolute -top-20 -right-20 w-64 h-64 bg-secondary/10 rounded-full blur-[80px] pointer-events-none"></div>
+          
+          <div class="flex gap-2 mb-8 relative z-10">
+            <input type="text" id="weather-city-input" class="w-full bg-black/40 border border-secondary/30 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-secondary transition placeholder-white/30" placeholder="Search city (e.g., Pune, Mumbai)...">
+            <button class="bg-secondary/10 border border-secondary/30 text-secondary px-6 rounded-xl font-bold font-exo hover:bg-secondary/20 transition-colors" onclick="fetchWeather(document.getElementById('weather-city-input').value)">Search</button>
+          </div>
+          
+          <div class="text-[80px] leading-none mb-2" id="weather-emoji">☀️</div>
+          <div class="font-exo font-black text-6xl text-white mb-1 tracking-tighter" id="weather-temp">--°C</div>
+          <div class="font-exo font-bold text-xl text-secondary mb-2 uppercase tracking-wide" id="weather-city">Fetching location...</div>
+          <div class="text-textMuted text-sm font-medium" id="weather-desc">Loading weather data...</div>
+          
+          <div class="grid grid-cols-3 gap-3 mt-8 relative z-10">
+            <div class="bg-black/40 rounded-xl p-4 border border-white/5">
+              <div class="font-exo font-bold text-secondary text-2xl" id="weather-humidity">--%</div>
+              <div class="text-textMuted text-[10px] font-mono mt-1 uppercase">Humidity</div>
+            </div>
+            <div class="bg-black/40 rounded-xl p-4 border border-white/5">
+              <div class="font-exo font-bold text-secondary text-2xl" id="weather-wind">--</div>
+              <div class="text-textMuted text-[10px] font-mono mt-1 uppercase">Wind (km/h)</div>
+            </div>
+            <div class="bg-black/40 rounded-xl p-4 border border-white/5">
+              <div class="font-exo font-bold text-secondary text-2xl" id="weather-vis">--</div>
+              <div class="text-textMuted text-[10px] font-mono mt-1 uppercase">Visibility (km)</div>
+            </div>
+          </div>
+          
+          <div id="weather-alert" class="hidden mt-6 p-4 bg-danger/10 border border-danger/30 rounded-xl text-xs text-danger font-medium font-mono text-left"></div>
+        </div>
+        
+      </div>
+
+      <!-- Alerts Feed -->
+      <div>
+        <div class="section-label" style="margin-bottom:1rem">LIVE ALERTS FEED</div>
+        <div class="alert-item danger">
+          <div class="alert-icon">🚨</div>
+          <div>
+            <div class="alert-title">Accident-Prone Zone</div>
+            <div class="alert-desc">NH48, Km 72 — 3 incidents last 7 days. Reduce speed below 60 km/h.</div>
+          </div>
+        </div>
+        <div class="alert-item warning">
+          <div class="alert-icon">⚠️</div>
+          <div>
+            <div class="alert-title">Speed Zone — 40 km/h</div>
+            <div class="alert-desc">School Zone active 7:30–9:00 AM & 1:00–2:30 PM near Wakad, Pune.</div>
+          </div>
+        </div>
+        <div class="alert-item info">
+          <div class="alert-icon">🛣</div>
+          <div>
+            <div class="alert-title">Road Under Repair</div>
+            <div class="alert-desc">Mumbai-Pune Expressway, Km 45–52. Single lane. Expect 20–30 min delay.</div>
+          </div>
+        </div>
+        <div class="alert-item success">
+          <div class="alert-icon">✅</div>
+          <div>
+            <div class="alert-title">Clear Roads — Lonavala</div>
+            <div class="alert-desc">All ghat sections clear. Light traffic. Ideal riding conditions today.</div>
+          </div>
+        </div>
+        <div class="alert-item warning">
+          <div class="alert-icon">🌫</div>
+          <div>
+            <div class="alert-title">Low Visibility Warning</div>
+            <div class="alert-desc">Khopoli ghat — Morning fog expected till 9 AM. Use low beams.</div>
+          </div>
+        </div>
+
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     PAGE 4: ROADSIDE ASSISTANCE
+══════════════════════════════════════ -->
+<div class="page" id="page-assist">
+  <div class="page-header">
+    <div class="section-label">ROADSIDE ASSISTANCE</div>
+    <div class="section-title">Help when you need it most</div>
+    <p class="text-muted" style="margin-top:0.5rem">Nearest mechanics & emergency services. Powered by MongoDB collection.</p>
+  </div>
+  <div class="section">
+    <div class="grid-2">
+      <div>
+        <!-- SOS Button -->
+        <div class="glass-card" style="text-align:center;padding:2rem;margin-bottom:1.5rem;border-color:rgba(255,61,61,0.3)">
+          <div style="font-size:2.5rem;margin-bottom:0.75rem">🆘</div>
+          <div class="feat-title" style="color:var(--red);margin-bottom:0.5rem">EMERGENCY SOS</div>
+          <div class="feat-desc" style="margin-bottom:1.25rem">Instantly share location with emergency contacts + nearest hospital</div>
+          <button class="btn-primary" style="background:linear-gradient(135deg,var(--red),#FF6B6B);box-shadow:0 0 30px rgba(255,61,61,0.3)" onclick="triggerSOS()">🆘 SEND SOS NOW</button>
+        </div>
+
+        <!-- Find Mechanic -->
+        <div class="glass-card">
+          <div class="feat-title" style="margin-bottom:0.75rem">🔧 Find Nearest Mechanic</div>
+          <input class="form-input" placeholder="Enter your location or use GPS..." style="margin-bottom:0.75rem">
+          <button class="btn-cyan-sm" style="width:100%;padding:0.65rem" onclick="showToast('🔍 Searching nearby mechanics...','📍')">Use My Location</button>
+        </div>
+
+        
+      </div>
+
+      <div>
+        <div class="section-label" style="margin-bottom:1rem">NEARBY MECHANICS (4 found)</div>
+        <div class="mechanic-card">
+          <div class="mechanic-avatar">🔧</div>
+          <div class="mechanic-info">
+            <div class="mechanic-name">Raj Auto Works</div>
+            <div class="mechanic-meta">
+              <span>📍 1.2 km away</span>
+              <span class="stars">★★★★★</span><span style="font-size:0.75rem"> 4.9</span>
+            </div>
+            <div style="margin-top:0.3rem;font-size:0.72rem;color:var(--green)">● Open now · Hero, Bajaj, Royal Enfield</div>
+          </div>
+          <button class="btn-sm" onclick="showToast('📨 Request sent to Raj Auto Works!','🔧')">Request Help</button>
+        </div>
+        <div class="mechanic-card">
+          <div class="mechanic-avatar">⚙️</div>
+          <div class="mechanic-info">
+            <div class="mechanic-name">MotoFix Express</div>
+            <div class="mechanic-meta">
+              <span>📍 2.7 km away</span>
+              <span class="stars">★★★★</span><span style="font-size:0.75rem"> 4.6</span>
+            </div>
+            <div style="margin-top:0.3rem;font-size:0.72rem;color:var(--green)">● Open · All brands</div>
+          </div>
+          <button class="btn-sm" onclick="showToast('📨 Request sent to MotoFix Express!','🔧')">Request Help</button>
+        </div>
+        <div class="mechanic-card">
+          <div class="mechanic-avatar">🏍</div>
+          <div class="mechanic-info">
+            <div class="mechanic-name">SpeedZone Service Center</div>
+            <div class="mechanic-meta">
+              <span>📍 3.1 km away</span>
+              <span class="stars">★★★★</span><span style="font-size:0.75rem"> 4.4</span>
+            </div>
+            <div style="margin-top:0.3rem;font-size:0.72rem;color:var(--yellow)">● 2 hrs wait</div>
+          </div>
+          <button class="btn-sm" onclick="showToast('📨 Request sent to SpeedZone!','🔧')">Request Help</button>
+        </div>
+        <div class="mechanic-card">
+          <div class="mechanic-avatar">🛠</div>
+          <div class="mechanic-info">
+            <div class="mechanic-name">Bike Rescue 24x7</div>
+            <div class="mechanic-meta">
+              <span>📍 4.8 km away</span>
+              <span class="stars">★★★★★</span><span style="font-size:0.75rem"> 4.8</span>
+            </div>
+            <div style="margin-top:0.3rem;font-size:0.72rem;color:var(--green)">● 24x7 · Mobile mechanic</div>
+          </div>
+          <button class="btn-sm" onclick="showToast('📨 Request sent to Bike Rescue!','🔧')">Request Help</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     PAGE 5: FUEL & STOPS
+══════════════════════════════════════ -->
+<div class="page" id="page-fuel">
+  <div class="page-header">
+    <div class="section-label">FUEL & STOPS</div>
+    <div class="section-title">Never run dry. Always find a great stop.</div>
+    <p class="text-muted" style="margin-top:0.5rem">Petrol pumps, premium fuel filter, live prices, and biker-friendly cafés.</p>
+  </div>
+  <div class="section">
+    <div class="grid-2">
+      <div>
+        <div class="section-label" style="margin-bottom:1rem">FUEL STATIONS NEARBY</div>
+        <div style="display:flex;gap:0.5rem;margin-bottom:1rem;flex-wrap:wrap">
+          <button class="map-btn active" onclick="filterFuel(this,'all')">All</button>
+          <button class="map-btn" onclick="filterFuel(this,'premium')">⚡ Premium Only</button>
+          <button class="map-btn" onclick="filterFuel(this,'24h')">🕐 24/7</button>
+        </div>
+
+        <div class="fuel-card">
+          <div class="fuel-icon" style="background:rgba(255,214,0,0.12);">🛢</div>
+          <div class="fuel-info">
+            <div class="fuel-name">HP Speed — Wakad</div>
+            <div class="fuel-meta">📍 0.8 km · ⭐ 4.7 · <span style="color:var(--green)">Open</span></div>
+            <div style="margin-top:0.3rem;display:flex;gap:0.5rem">
+              <span class="badge badge-yellow" style="font-size:0.65rem">⚡ Premium</span>
+              <span class="badge badge-green" style="font-size:0.65rem">24/7</span>
+            </div>
+          </div>
+          <div class="fuel-price">₹106.2<div class="fuel-price-sub">per litre</div></div>
+        </div>
+
+        <div class="fuel-card">
+          <div class="fuel-icon" style="background:rgba(255,92,26,0.1);">⛽</div>
+          <div class="fuel-info">
+            <div class="fuel-name">Indian Oil — Baner</div>
+            <div class="fuel-meta">📍 1.4 km · ⭐ 4.3 · <span style="color:var(--green)">Open</span></div>
+            <div style="margin-top:0.3rem;display:flex;gap:0.5rem">
+              <span class="badge badge-orange" style="font-size:0.65rem">Regular + Premium</span>
+            </div>
+          </div>
+          <div class="fuel-price">₹104.8<div class="fuel-price-sub">per litre</div></div>
+        </div>
+
+        <div class="fuel-card">
+          <div class="fuel-icon" style="background:rgba(0,212,255,0.1);">🏪</div>
+          <div class="fuel-info">
+            <div class="fuel-name">Bharat Petroleum — Hinjewadi</div>
+            <div class="fuel-meta">📍 2.1 km · ⭐ 4.5 · <span style="color:var(--green)">Open</span></div>
+            <div style="margin-top:0.3rem;display:flex;gap:0.5rem">
+              <span class="badge badge-green" style="font-size:0.65rem">24/7</span>
+            </div>
+          </div>
+          <div class="fuel-price">₹105.4<div class="fuel-price-sub">per litre</div></div>
+        </div>
+
+        
+      </div>
+
+      <div>
+        <div class="section-label" style="margin-bottom:1rem">🍵 BIKER-FRIENDLY CAFÉS</div>
+
+        <div class="fuel-card" style="border-color:rgba(255,92,26,0.2)">
+          <div class="fuel-icon" style="background:rgba(255,92,26,0.12);font-size:1.5rem;">☕</div>
+          <div class="fuel-info">
+            <div class="fuel-name">Riders' Den Café — Lonavala</div>
+            <div class="fuel-meta">📍 Route waypoint · ⭐ 4.9 · Biker-favourite</div>
+            <div style="margin-top:0.3rem;font-size:0.75rem;color:var(--text2)">Parking ✓ &nbsp; Charging ✓ &nbsp; WiFi ✓ &nbsp; Mechanic nearby ✓</div>
+          </div>
+        </div>
+
+        <div class="fuel-card">
+          <div class="fuel-icon" style="background:rgba(0,212,255,0.08);font-size:1.5rem;">🍳</div>
+          <div class="fuel-info">
+            <div class="fuel-name">Highway Hunger — Khopoli</div>
+            <div class="fuel-meta">📍 2.3 km off route · ⭐ 4.6</div>
+            <div style="margin-top:0.3rem;font-size:0.75rem;color:var(--text2)">Parking ✓ &nbsp; Thali ₹120 &nbsp; Open 6 AM–11 PM</div>
+          </div>
+        </div>
+
+        <div class="fuel-card">
+          <div class="fuel-icon" style="background:rgba(0,255,136,0.08);font-size:1.5rem;">🏕</div>
+          <div class="fuel-info">
+            <div class="fuel-name">Summit Rest Stop — Khandala</div>
+            <div class="fuel-meta">📍 On route · ⭐ 4.8 · Views guaranteed</div>
+            <div style="margin-top:0.3rem;font-size:0.75rem;color:var(--text2)">Maggi &amp; chai ✓ &nbsp; Bike wash ✓ &nbsp; Camping area</div>
+          </div>
+        </div>
+
+        <!-- Fuel Price Chart -->
+        <div class="glass-card" style="margin-top:1rem">
+          <div class="feat-title" style="margin-bottom:1rem">Today's Fuel Prices</div>
+          <svg width="100%" height="100" viewBox="0 0 400 100">
+            <defs>
+              <linearGradient id="fuelGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="var(--green)" stop-opacity="0.3"/>
+                <stop offset="100%" stop-color="var(--green)" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <path d="M 0 60 L 60 55 L 120 58 L 180 50 L 240 48 L 300 52 L 360 45 L 400 42 L 400 100 L 0 100 Z" fill="url(#fuelGrad)"/>
+            <path d="M 0 60 L 60 55 L 120 58 L 180 50 L 240 48 L 300 52 L 360 45 L 400 42" stroke="var(--green)" stroke-width="2" fill="none"/>
+            <text x="0" y="95" font-size="8" fill="var(--text2)" font-family="'JetBrains Mono',monospace">Mon</text>
+            <text x="52" y="95" font-size="8" fill="var(--text2)" font-family="'JetBrains Mono',monospace">Tue</text>
+            <text x="112" y="95" font-size="8" fill="var(--text2)" font-family="'JetBrains Mono',monospace">Wed</text>
+            <text x="172" y="95" font-size="8" fill="var(--text2)" font-family="'JetBrains Mono',monospace">Thu</text>
+            <text x="232" y="95" font-size="8" fill="var(--text2)" font-family="'JetBrains Mono',monospace">Fri</text>
+            <text x="292" y="95" font-size="8" fill="var(--text2)" font-family="'JetBrains Mono',monospace">Sat</text>
+            <text x="352" y="95" font-size="8" fill="var(--text2)" font-family="'JetBrains Mono',monospace">Sun</text>
+            <text x="370" y="38" font-size="9" fill="var(--green)" font-family="'JetBrains Mono',monospace">₹106.2</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     PAGE 6: GROUP RIDE
+══════════════════════════════════════ -->
+<div class="page" id="page-group">
+  <div class="page-header">
+    <div class="section-label">GROUP RIDE MODE</div>
+    <div class="section-title">Ride together. Arrive together.</div>
+    <p class="text-muted" style="margin-top:0.5rem">Live rider tracking, marshal dashboard, and buddy alerts via WebSocket.</p>
+  </div>
+  <div class="section">
+    <div class="grid-2">
+      <!-- Live Group Map -->
+      <div>
+        <div class="section-label" style="margin-bottom:1rem">LIVE RIDE MAP — GROUP "THUNDER PACK"</div>
+        <div class="map-container" style="height:320px;position:relative;" id="group-map">
+          <svg width="100%" height="100%" viewBox="0 0 600 320">
+            <defs>
+              <pattern id="gmapgrid" width="30" height="30" patternUnits="userSpaceOnUse">
+                <path d="M 30 0 L 0 0 0 30" fill="none" stroke="rgba(0,212,255,0.05)" stroke-width="1"/>
+              </pattern>
+            </defs>
+            <rect width="600" height="320" fill="#080E1E"/>
+            <rect width="600" height="320" fill="url(#gmapgrid)"/>
+            <!-- Route path -->
+            <path d="M 50 280 C 150 250 200 200 280 180 C 360 160 420 140 560 60" stroke="rgba(255,92,26,0.3)" stroke-width="3" fill="none" stroke-dasharray="10 6"/>
+            <!-- Rider dots (animated via JS) -->
+            <circle id="r1" cx="120" cy="258" r="8" fill="#FF5C1A" stroke="#000" stroke-width="2"/>
+            <circle id="r1p" cx="120" cy="258" r="14" fill="none" stroke="#FF5C1A" stroke-width="1" opacity="0.3"/>
+            <text x="130" y="252" font-size="9" fill="var(--orange2)" font-family="'Exo 2',sans-serif" font-weight="700">Salaar (Marshal)</text>
+
+            <circle id="r2" cx="200" cy="220" r="7" fill="var(--cyan)" stroke="#000" stroke-width="2"/>
+            <circle id="r2p" cx="200" cy="220" r="12" fill="none" stroke="var(--cyan)" stroke-width="1" opacity="0.3"/>
+            <text x="210" y="215" font-size="9" fill="var(--cyan)" font-family="'Exo 2',sans-serif">Rishi</text>
+
+            <circle id="r3" cx="260" cy="192" r="7" fill="var(--green)" stroke="#000" stroke-width="2"/>
+            <circle id="r3p" cx="260" cy="192" r="12" fill="none" stroke="var(--green)" stroke-width="1" opacity="0.3"/>
+            <text x="270" y="187" font-size="9" fill="var(--green)" font-family="'Exo 2',sans-serif">Arjun</text>
+
+            <circle id="r4" cx="80" cy="275" r="7" fill="var(--yellow)" stroke="#000" stroke-width="2"/>
+            <circle id="r4p" cx="80" cy="275" r="12" fill="none" stroke="var(--yellow)" stroke-width="1" opacity="0.3"/>
+            <text x="92" y="272" font-size="9" fill="var(--yellow)" font-family="'Exo 2',sans-serif">Dev ⚠️</text>
+
+            <!-- Destination -->
+            <circle cx="560" cy="60" r="8" fill="var(--orange)"/>
+            <text x="520" y="55" font-size="9" fill="var(--orange)" font-family="'Exo 2',sans-serif" font-weight="700">Khandala</text>
+          </svg>
+          <div class="map-overlay-info" style="top:auto;bottom:1rem">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--cyan)">4 RIDERS LIVE</div>
+            <div style="font-size:0.75rem;color:var(--yellow);margin-top:0.2rem">⚠️ Dev is falling behind</div>
+          </div>
+        </div>
+
+        <!-- Marshal Controls -->
+        <div class="glass-card" style="margin-top:1rem">
+          <div class="feat-title" style="margin-bottom:0.75rem">🏁 Marshal Dashboard</div>
+          <div style="display:flex;gap:0.75rem;flex-wrap:wrap">
+            <button class="btn-cyan-sm" onclick="showToast('📢 Group alert sent to all riders!','📣')">📢 Broadcast Alert</button>
+            <button class="btn-sm" onclick="showToast('⏸ Ride paused. All riders notified.','⏸')">⏸ Pause Ride</button>
+            <button class="btn-cyan-sm" onclick="showToast('📍 Waypoint shared with group!','📍')">📍 Share Waypoint</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rider Status Panel -->
+      <div>
+        <div class="section-label" style="margin-bottom:1rem">RIDER STATUS PANEL</div>
+
+        <div class="mechanic-card" style="border-color:rgba(255,92,26,0.4)">
+          <div style="width:14px;height:14px;border-radius:50%;background:var(--orange);flex-shrink:0"></div>
+          <div class="mechanic-info">
+            <div class="mechanic-name">Salaar — MARSHAL 👑</div>
+            <div class="mechanic-meta"><span>Speed: 62 km/h</span><span>Battery: 94%</span></div>
+          </div>
+          <span class="badge badge-green">LEAD</span>
+        </div>
+        <div class="mechanic-card">
+          <div style="width:14px;height:14px;border-radius:50%;background:var(--cyan);flex-shrink:0"></div>
+          <div class="mechanic-info">
+            <div class="mechanic-name">Rishi</div>
+            <div class="mechanic-meta"><span>Speed: 58 km/h</span><span>+200m behind</span></div>
+          </div>
+          <span class="badge badge-green">OK</span>
+        </div>
+        <div class="mechanic-card">
+          <div style="width:14px;height:14px;border-radius:50%;background:var(--green);flex-shrink:0"></div>
+          <div class="mechanic-info">
+            <div class="mechanic-name">Arjun</div>
+            <div class="mechanic-meta"><span>Speed: 65 km/h</span><span>+400m behind</span></div>
+          </div>
+          <span class="badge badge-green">OK</span>
+        </div>
+        <div class="mechanic-card" style="border-color:rgba(255,214,0,0.4);background:rgba(255,214,0,0.04)">
+          <div style="width:14px;height:14px;border-radius:50%;background:var(--yellow);flex-shrink:0;animation:pulse 1.5s infinite"></div>
+          <div class="mechanic-info">
+            <div class="mechanic-name" style="color:var(--yellow)">Dev ⚠️ FALLING BEHIND</div>
+            <div class="mechanic-meta"><span>Speed: 38 km/h</span><span>+2.1km behind</span></div>
+          </div>
+          <button class="btn-sm" style="background:rgba(255,214,0,0.15);border-color:rgba(255,214,0,0.4);color:var(--yellow)" onclick="showToast('📞 Calling Dev...','📞')">Call</button>
+        </div>
+
+        <!-- Group Ride Settings -->
+        <div class="glass-card" style="margin-top:1.25rem">
+          <div class="feat-title" style="margin-bottom:1rem">Group Settings</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem;font-size:0.85rem">
+            <span>Max separation allowed</span>
+            <span class="badge badge-cyan">2 km</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem;font-size:0.85rem">
+            <span>Auto-wait at waypoints</span>
+            <span class="badge badge-green">ON</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.85rem">
+            <span>SOS sharing with group</span>
+            <span class="badge badge-green">ON</span>
+          </div>
+        </div>
+
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     PAGE 7: AI RIDE PLANNER
+══════════════════════════════════════ -->
+<div class="page" id="page-ai">
+  <div class="page-header">
+    <div class="section-label">AI RIDE PLANNER</div>
+    <div class="section-title">Your intelligent riding co-pilot</div>
+    <p class="text-muted" style="margin-top:0.5rem">Describe your ride. Our AI builds the perfect route.</p>
+  </div>
+  <div class="section">
+    <div class="grid-2">
+      <div>
+        <!-- AI Chat Interface -->
+        <div class="glass-premium rounded-3xl overflow-hidden flex flex-col h-[500px] border border-white/10 shadow-[0_15px_30px_-10px_rgba(0,0,0,0.8)] ring-1 ring-white/5 relative">
+          <!-- Dynamic Glow -->
+          <div class="absolute top-0 right-1/2 translate-x-1/2 w-full h-32 bg-primary/5 rounded-full blur-[50px] pointer-events-none"></div>
+
+          <div class="px-6 py-4 flex items-center gap-4 bg-white/5 border-b border-white/10 relative z-10">
+            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-primary2 flex items-center justify-center text-lg shadow-[0_0_15px_rgba(255,92,26,0.4)]">🤖</div>
+            <div>
+              <div class="font-exo font-bold text-white tracking-wide">MotoIQ Insight Engine</div>
+              <div class="text-[10px] font-mono text-success flex items-center gap-1.5 uppercase mt-0.5">
+                <div class="w-1.5 h-1.5 rounded-full bg-success animate-pulse shadow-[0_0_5px_#00FF88]"></div> Neural Net Active
+              </div>
+            </div>
+          </div>
+          
+          <div class="flex-1 p-6 overflow-y-auto flex flex-col gap-4 relative z-10" id="chat-messages">
+            <div class="self-start max-w-[85%] bg-[#0f111a] border border-white/10 text-white p-4 rounded-2xl rounded-tl-sm text-sm leading-relaxed shadow-sm">
+              Hey rider! 🏍 I'm your AI Ride Planner. Tell me where you want to go, how far you want to ride, and what type of experience you're looking for — scenic, fast, adventurous, or relaxed. I'll craft the perfect route!
+            </div>
+          </div>
+          
+          <div class="p-4 bg-black/40 border-t border-white/10 flex gap-3 relative z-10">
+            <input class="flex-1 bg-[#11131c] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all placeholder-white/30" id="chat-input" placeholder="Initiate route sequence. e.g. 200km scenic..." onkeydown="if(event.key==='Enter')sendChat()">
+            <button class="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-primary2 flex items-center justify-center text-black hover:opacity-90 transition-opacity flex-shrink-0 shadow-[0_0_15px_rgba(255,92,26,0.3)]" onclick="sendChat()">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Quick Prompts -->
+        <div style="margin-top:1rem;display:flex;flex-wrap:wrap;gap:0.5rem">
+          <span class="badge badge-orange" style="cursor:pointer;padding:0.4rem 0.8rem" onclick="quickPrompt('Plan a 150km scenic weekend ride from Pune')">🏔 Scenic Weekend</span>
+          <span class="badge badge-cyan" style="cursor:pointer;padding:0.4rem 0.8rem" onclick="quickPrompt('Find me a curvy mountain road ride under 100km')">🌀 Curvy Roads</span>
+          <span class="badge badge-green" style="cursor:pointer;padding:0.4rem 0.8rem" onclick="quickPrompt('Plan a sunrise ride with best views near Pune')">🌅 Sunrise Ride</span>
+          <span class="badge badge-yellow" style="cursor:pointer;padding:0.4rem 0.8rem" onclick="quickPrompt('Group ride plan for 6 people, Pune to Mahabaleshwar')">👥 Group Ride</span>
+        </div>
+      </div>
+
+      <!-- AI Output Panel -->
+      <div>
+        <div class="glass-premium rounded-3xl p-6 border border-white/10 shadow-[0_15px_30px_-10px_rgba(0,0,0,0.8)] mb-6">
+          <div class="font-exo font-bold text-lg mb-4 flex items-center gap-2">🗺 AI Route Telemetry</div>
+          <div id="ai-route-output">
+            <div style="text-align:center;padding:2.5rem;color:var(--text2)">
+              <div class="opacity-30 mix-blend-screen text-5xl mb-3">⎔</div>
+              <div class="font-mono text-xs uppercase tracking-widest">Awaiting Parameters...</div>
+            </div>
+          </div>
+        </div>
+
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     PAGE 8: DIGILOCKER
+══════════════════════════════════════ -->
+<div class="page" id="page-digi">
+  <div class="page-header">
+    <div class="section-label">DIGILOCKER INTEGRATION</div>
+    <div class="section-title">Ride paperless. Ride legal.</div>
+    <p class="text-muted" style="margin-top:0.5rem">Simulated DigiLocker integration — no real connection made.</p>
+  </div>
+  <div class="section">
+    <div class="grid-2">
+      <div>
+        <div class="section-label" style="margin-bottom:1.5rem">HOW IT WORKS</div>
+        <div class="digilock-flow">
+          <div class="dl-step">
+            <div class="dl-step-num">1</div>
+            <div class="dl-step-info">
+              <div class="dl-step-title">Connect DigiLocker</div>
+              <div class="dl-step-desc">Authenticate using your Aadhaar-linked mobile number. Secure OTP-based login.</div>
+            </div>
+          </div>
+          <div class="dl-step">
+            <div class="dl-step-num">2</div>
+            <div class="dl-step-info">
+              <div class="dl-step-title">Fetch Documents</div>
+              <div class="dl-step-desc">MotoIQ requests access to Driving License, RC, and Insurance from DigiLocker API.</div>
+            </div>
+          </div>
+          <div class="dl-step">
+            <div class="dl-step-num">3</div>
+            <div class="dl-step-info">
+              <div class="dl-step-title">Verification on Ride</div>
+              <div class="dl-step-desc">At checkpoints, generate a QR code for instant digital document verification.</div>
+            </div>
+          </div>
+          <div class="dl-step">
+            <div class="dl-step-num">4</div>
+            <div class="dl-step-info">
+              <div class="dl-step-title">Permit Checks</div>
+              <div class="dl-step-desc">Before interstate rides, app verifies legal compliance automatically.</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:2rem;text-align:center">
+          <button class="btn-primary" onclick="openDLModal()" style="margin-bottom:0.75rem;display:block;width:100%">🔐 Connect DigiLocker (Demo)</button>
+          <div style="font-size:0.75rem;color:var(--text2)">* This is a simulated demo. No real connection is made.</div>
+        </div>
+
+        
+      </div>
+
+      <!-- Document Cards -->
+      <div>
+        <div class="section-label" style="margin-bottom:1rem">YOUR DOCUMENTS</div>
+        <div id="doc-cards-locked" style="text-align:center;padding:3rem;color:var(--text2)">
+          <div style="font-size:3rem;margin-bottom:1rem">🔒</div>
+          <div style="font-family:'Exo 2',sans-serif;font-weight:700">Documents Locked</div>
+          <div style="font-size:0.85rem;margin-top:0.5rem">Connect DigiLocker to access your documents</div>
+        </div>
+        <div id="doc-cards-unlocked" style="display:none">
+          <div style="margin-bottom:0.75rem">
+            <div class="doc-card">
+              <div class="doc-card-icon">🪪</div>
+              <div class="doc-card-info">
+                <div class="doc-card-name">Driving License</div>
+                <div class="doc-card-meta">DL — MH12 20200042XXX · Valid till Dec 2035</div>
+                <div class="doc-card-status" style="color:var(--green);margin-top:0.3rem">✓ Verified · Transport (LMV)</div>
+              </div>
+              <span class="badge badge-green">VALID</span>
+            </div>
+          </div>
+          <div style="margin-bottom:0.75rem">
+            <div class="doc-card">
+              <div class="doc-card-icon">🏍</div>
+              <div class="doc-card-info">
+                <div class="doc-card-name">Vehicle Registration (RC)</div>
+                <div class="doc-card-meta">MH12 AB 1234 · Royal Enfield Classic 350</div>
+                <div class="doc-card-status" style="color:var(--green);margin-top:0.3rem">✓ Fitness valid till Aug 2028</div>
+              </div>
+              <span class="badge badge-green">VALID</span>
+            </div>
+          </div>
+          <div style="margin-bottom:0.75rem">
+            <div class="doc-card">
+              <div class="doc-card-icon">🛡</div>
+              <div class="doc-card-info">
+                <div class="doc-card-name">Vehicle Insurance</div>
+                <div class="doc-card-meta">HDFC Ergo · Policy ending Mar 2026</div>
+                <div class="doc-card-status" style="color:var(--yellow);margin-top:0.3rem">⚠️ Renew in 30 days</div>
+              </div>
+              <span class="badge badge-yellow">RENEW SOON</span>
+            </div>
+          </div>
+          <div style="margin-bottom:0.75rem">
+            <div class="doc-card">
+              <div class="doc-card-icon">📋</div>
+              <div class="doc-card-info">
+                <div class="doc-card-name">PUC Certificate</div>
+                <div class="doc-card-meta">Pollution under control · Valid till Jul 2025</div>
+                <div class="doc-card-status" style="color:var(--green);margin-top:0.3rem">✓ Compliant</div>
+              </div>
+              <span class="badge badge-green">VALID</span>
+            </div>
+          </div>
+          <button class="btn-cyan-sm" style="width:100%;padding:0.65rem;margin-top:0.5rem" onclick="showToast('📲 QR code generated for checkpoint!','🔳')">🔳 Generate Checkpoint QR</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     PAGE 9: STATS & SOCIAL
+══════════════════════════════════════ -->
+<div class="page" id="page-stats">
+  <div class="page-header">
+    <div class="section-label">RIDE STATS & SOCIAL</div>
+    <div class="section-title">Your riding story, in numbers</div>
+    <p class="text-muted" style="margin-top:0.5rem">All your rides logged, analyzed, and share-ready.</p>
+  </div>
+  <div class="section">
+    <!-- Stats Grid -->
+    <div class="grid-4" style="margin-bottom:2.5rem">
+      <div class="stat-card"><div class="stat-num">3,847</div><div class="stat-label">Total km ridden</div></div>
+      <div class="stat-card"><div class="stat-num">42</div><div class="stat-label">Rides completed</div></div>
+      <div class="stat-card"><div class="stat-num">186h</div><div class="stat-label">Total ride time</div></div>
+      <div class="stat-card"><div class="stat-num">91.4</div><div class="stat-label">Safety score</div></div>
+    </div>
+
+    <!-- Badges -->
+    <div class="section-label" style="margin-bottom:1rem">EARNED BADGES</div>
+    <div class="badge-grid">
+      <div class="gam-badge"><div class="gam-badge-icon">🏔</div><div class="gam-badge-name">MOUNTAIN MASTER</div><div class="gam-badge-desc">500km+ in ghats</div></div>
+      <div class="gam-badge"><div class="gam-badge-icon">🌅</div><div class="gam-badge-name">SUNRISE RIDER</div><div class="gam-badge-desc">5 dawn departures</div></div>
+      <div class="gam-badge"><div class="gam-badge-icon">🌧</div><div class="gam-badge-name">RAIN WARRIOR</div><div class="gam-badge-desc">Rode in monsoon</div></div>
+      <div class="gam-badge"><div class="gam-badge-icon">👥</div><div class="gam-badge-name">GROUP LEADER</div><div class="gam-badge-desc">Led 3 group rides</div></div>
+      <div class="gam-badge"><div class="gam-badge-icon">⚡</div><div class="gam-badge-name">SPEED DEMON</div><div class="gam-badge-desc">200km in 3hrs</div></div>
+      <div class="gam-badge" style="opacity:0.4"><div class="gam-badge-icon">🌍</div><div class="gam-badge-name">EXPLORER</div><div class="gam-badge-desc">5 states visited</div></div>
+    </div>
+
+    <div class="separator"></div>
+
+    <!-- Ride History -->
+    <div class="section-label" style="margin-bottom:1rem">RECENT RIDES</div>
+    <div class="ride-row">
+      <div class="ride-map-thumb">🏔</div>
+      <div class="ride-info">
+        <div class="ride-title">Pune → Lonavala Weekend Blast</div>
+        <div class="ride-meta">23 Mar 2026 · Sunday · Sunny ☀️</div>
+        <div class="ride-stats">
+          <span class="ride-stat">📏 86 km</span>
+          <span class="ride-stat">⏱ 2h 10m</span>
+          <span class="ride-stat">🏔 820m ↑</span>
+          <span class="ride-stat">😊 Fun: 9.2/10</span>
+        </div>
+      </div>
+      <button class="btn-sm" onclick="showToast('🔗 Ride link copied!','📤')">Share</button>
+    </div>
+    <div class="ride-row">
+      <div class="ride-map-thumb">🌄</div>
+      <div class="ride-info">
+        <div class="ride-title">Group Ride — Mahabaleshwar Trip</div>
+        <div class="ride-meta">15 Mar 2026 · Saturday · 6 riders</div>
+        <div class="ride-stats">
+          <span class="ride-stat">📏 240 km</span>
+          <span class="ride-stat">⏱ 6h 45m</span>
+          <span class="ride-stat">🏔 1100m ↑</span>
+          <span class="ride-stat">😊 Fun: 9.8/10</span>
+        </div>
+      </div>
+      <button class="btn-sm" onclick="showToast('🔗 Ride link copied!','📤')">Share</button>
+    </div>
+    <div class="ride-row">
+      <div class="ride-map-thumb">🌆</div>
+      <div class="ride-info">
+        <div class="ride-title">Evening Expressway Run</div>
+        <div class="ride-meta">10 Mar 2026 · Wednesday · Solo</div>
+        <div class="ride-stats">
+          <span class="ride-stat">📏 120 km</span>
+          <span class="ride-stat">⏱ 1h 40m</span>
+          <span class="ride-stat">🏔 200m ↑</span>
+          <span class="ride-stat">😊 Fun: 7.5/10</span>
+        </div>
+      </div>
+      <button class="btn-sm" onclick="showToast('🔗 Ride link copied!','📤')">Share</button>
+    </div>
+
+    
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     PAGE 10: ARCHITECTURE
+══════════════════════════════════════ -->
+<div class="page" id="page-arch">
+  <div class="page-header">
+    <div class="section-label">SYSTEM ARCHITECTURE</div>
+    <div class="section-title">How MotoIQ is built</div>
+    <p class="text-muted" style="margin-top:0.5rem">Full-stack architecture: Frontend → Node.js → MongoDB → External APIs</p>
+  </div>
+  <div class="section">
+    <!-- Architecture Flow -->
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:2rem;margin-bottom:2rem">
+      <div style="text-align:center;margin-bottom:2rem">
+        <div class="section-label">FULL SYSTEM DIAGRAM</div>
+      </div>
+      <div class="arch-flow" style="flex-direction:column;gap:1rem">
+        <!-- Layer 1: Frontend -->
+        <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
+          <div class="arch-node highlight-orange">React.js / PWA<div class="arch-node-label">Mobile + Web UI</div></div>
+          <div class="arch-node highlight-orange">Mapbox GL JS<div class="arch-node-label">Route Rendering</div></div>
+          <div class="arch-node highlight-orange">WebSocket Client<div class="arch-node-label">Group Ride Live</div></div>
+        </div>
+        <div style="text-align:center;color:var(--text2);font-size:1.5rem">↕</div>
+        <!-- Layer 2: Backend -->
+        <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
+          <div class="arch-node highlight-cyan">Node.js + Express<div class="arch-node-label">REST API Server</div></div>
+          <div class="arch-node highlight-cyan">Socket.io Server<div class="arch-node-label">Realtime Events</div></div>
+          <div class="arch-node highlight-cyan">JWT Auth<div class="arch-node-label">Security Layer</div></div>
+        </div>
+        <div style="text-align:center;color:var(--text2);font-size:1.5rem">↕</div>
+        <!-- Layer 3: DB -->
+        <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
+          <div class="arch-node highlight-green">MongoDB Atlas<div class="arch-node-label">Primary Database</div></div>
+          <div class="arch-node highlight-green">Redis Cache<div class="arch-node-label">Sessions + Routes</div></div>
+        </div>
+        <div style="text-align:center;color:var(--text2);font-size:1.5rem">↕</div>
+        <!-- Layer 4: APIs -->
+        <div style="display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap">
+          <div class="arch-node">Mapbox API<div class="arch-node-label">Navigation</div></div>
+          <div class="arch-node">OpenWeatherMap<div class="arch-node-label">Weather</div></div>
+          <div class="arch-node">DigiLocker<div class="arch-node-label">Gov Documents</div></div>
+          <div class="arch-node">Foursquare<div class="arch-node-label">Places</div></div>
+          <div class="arch-node">OpenAI<div class="arch-node-label">AI Planner</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- API Endpoints -->
+    <div class="section-label" style="margin-bottom:1rem">BACKEND API ENDPOINTS</div>
+    <div class="endpoint-row"><span class="method-badge method-get">GET</span><span class="endpoint-path">/api/routes</span><span class="endpoint-desc">Fetch scenic routes with filters</span></div>
+    <div class="endpoint-row"><span class="method-badge method-get">GET</span><span class="endpoint-path">/api/alerts</span><span class="endpoint-desc">Live rider alerts + crowdsourced data</span></div>
+    <div class="endpoint-row"><span class="method-badge method-get">GET</span><span class="endpoint-path">/api/mechanics</span><span class="endpoint-desc">Nearby mechanics within radius</span></div>
+    <div class="endpoint-row"><span class="method-badge method-get">GET</span><span class="endpoint-path">/api/weather</span><span class="endpoint-desc">Live weather via OpenWeatherMap proxy</span></div>
+    <div class="endpoint-row"><span class="method-badge method-get">GET</span><span class="endpoint-path">/api/fuel-stations</span><span class="endpoint-desc">Petrol pumps + live fuel prices</span></div>
+    <div class="endpoint-row"><span class="method-badge method-post">POST</span><span class="endpoint-path">/api/rides</span><span class="endpoint-desc">Save completed ride to MongoDB</span></div>
+    <div class="endpoint-row"><span class="method-badge method-post">POST</span><span class="endpoint-path">/api/ai-route</span><span class="endpoint-desc">Generate AI route via OpenAI</span></div>
+    <div class="endpoint-row"><span class="method-badge method-post">POST</span><span class="endpoint-path">/api/digilocker/connect</span><span class="endpoint-desc">OAuth flow for DigiLocker</span></div>
+    <div class="endpoint-row"><span class="method-badge method-get">GET</span><span class="endpoint-path">/api/group/:id</span><span class="endpoint-desc">Live group ride state</span></div>
+
+    <div class="separator"></div>
+
+    <!-- MongoDB Collections -->
+    <div class="section-label" style="margin-bottom:1.5rem">MONGODB DATABASE COLLECTIONS</div>
+    <div class="grid-3">
+      <div class="glass-card">
+        <div class="db-collection-header">
+          <div class="db-collection-name">users</div>
+          <div class="db-count">42,381 docs</div>
+        </div>
+        <div class="json-block" style="font-size:0.72rem">
+{<br>
+&nbsp;&nbsp;<span class="json-key">"_id"</span>: <span class="json-string">"ObjectId"</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"name"</span>: <span class="json-string">"String"</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"bike"</span>: <span class="json-string">"String"</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"total_km"</span>: <span class="json-num">Number</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"badges"</span>: [Array]<br>
+}
+        </div>
+      </div>
+      <div class="glass-card">
+        <div class="db-collection-header">
+          <div class="db-collection-name">routes</div>
+          <div class="db-count">3,412 docs</div>
+        </div>
+        <div class="json-block" style="font-size:0.72rem">
+{<br>
+&nbsp;&nbsp;<span class="json-key">"_id"</span>: <span class="json-string">"ObjectId"</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"name"</span>: <span class="json-string">"String"</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"distance"</span>: <span class="json-num">Number</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"scenic_score"</span>: <span class="json-num">Number</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"waypoints"</span>: [Array]<br>
+}
+        </div>
+      </div>
+      <div class="glass-card">
+        <div class="db-collection-header">
+          <div class="db-collection-name">alerts</div>
+          <div class="db-count">8,920 docs</div>
+        </div>
+        <div class="json-block" style="font-size:0.72rem">
+{<br>
+&nbsp;&nbsp;<span class="json-key">"_id"</span>: <span class="json-string">"ObjectId"</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"type"</span>: <span class="json-string">"String"</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"severity"</span>: <span class="json-string">"String"</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"location"</span>: {GeoJSON},<br>
+&nbsp;&nbsp;<span class="json-key">"ttl"</span>: <span class="json-num">Number</span><br>
+}
+        </div>
+      </div>
+      <div class="glass-card">
+        <div class="db-collection-header">
+          <div class="db-collection-name">mechanics</div>
+          <div class="db-count">1,240 docs</div>
+        </div>
+        <div class="json-block" style="font-size:0.72rem">
+{<br>
+&nbsp;&nbsp;<span class="json-key">"name"</span>: <span class="json-string">"String"</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"location"</span>: {GeoJSON},<br>
+&nbsp;&nbsp;<span class="json-key">"rating"</span>: <span class="json-num">Number</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"brands"</span>: [Array],<br>
+&nbsp;&nbsp;<span class="json-key">"open_24h"</span>: <span class="json-bool">Boolean</span><br>
+}
+        </div>
+      </div>
+      <div class="glass-card">
+        <div class="db-collection-header">
+          <div class="db-collection-name">fuel_stations</div>
+          <div class="db-count">4,800 docs</div>
+        </div>
+        <div class="json-block" style="font-size:0.72rem">
+{<br>
+&nbsp;&nbsp;<span class="json-key">"name"</span>: <span class="json-string">"String"</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"price_per_l"</span>: <span class="json-num">Number</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"has_premium"</span>: <span class="json-bool">Boolean</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"location"</span>: {GeoJSON}<br>
+}
+        </div>
+      </div>
+      <div class="glass-card">
+        <div class="db-collection-header">
+          <div class="db-collection-name">group_rides</div>
+          <div class="db-count">521 docs</div>
+        </div>
+        <div class="json-block" style="font-size:0.72rem">
+{<br>
+&nbsp;&nbsp;<span class="json-key">"group_name"</span>: <span class="json-string">"String"</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"marshal"</span>: <span class="json-string">"ObjectId"</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"riders"</span>: [Array],<br>
+&nbsp;&nbsp;<span class="json-key">"status"</span>: <span class="json-string">"active"</span><br>
+}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     PAGE 11: PRICING
+══════════════════════════════════════ -->
+<div class="page" id="page-pricing">
+  <div class="page-header">
+    <div class="section-label">PRICING</div>
+    <div class="section-title">Ride more for less</div>
+    <p class="text-muted" style="margin-top:0.5rem">Start free. Upgrade when the roads call for more.</p>
+  </div>
+  <div class="section">
+    <div class="grid-2" style="max-width:800px;margin:0 auto">
+      <div class="price-card">
+        <div class="price-plan">FREE RIDER</div>
+        <div class="price-amount">₹0</div>
+        <div class="price-period">forever</div>
+        <div class="price-feature"><span class="price-feature-icon">✓</span>Basic route planning</div>
+        <div class="price-feature"><span class="price-feature-icon">✓</span>Live safety alerts</div>
+        <div class="price-feature"><span class="price-feature-icon">✓</span>Roadside assistance (3/month)</div>
+        <div class="price-feature"><span class="price-feature-icon">✓</span>Ride logging (last 10 rides)</div>
+        <div class="price-feature"><span class="price-feature-icon">✓</span>DigiLocker connection</div>
+        <div class="price-feature"><span class="price-feature-x">○</span><span style="color:var(--text2)">AI Ride Planner</span></div>
+        <div class="price-feature"><span class="price-feature-x">○</span><span style="color:var(--text2)">Advanced scenic routing</span></div>
+        <div class="price-feature"><span class="price-feature-x">○</span><span style="color:var(--text2)">Group ride tools</span></div>
+        <div class="price-feature"><span class="price-feature-x">○</span><span style="color:var(--text2)">Premium fuel filter</span></div>
+        <button class="btn-ghost" style="width:100%;margin-top:1.5rem" onclick="showToast('You are already on Free plan!','✅')">Current Plan</button>
+      </div>
+      <div class="price-card featured">
+        <div class="price-featured-badge">MOST POPULAR</div>
+        <div class="price-plan" style="color:var(--orange2)">MOTO PRO</div>
+        <div class="price-amount" style="background:linear-gradient(135deg,var(--orange),var(--orange2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">₹199<span>/mo</span></div>
+        <div class="price-period">₹1,799/year · Save 25%</div>
+        <div class="price-feature"><span class="price-feature-icon">✓</span>Everything in Free</div>
+        <div class="price-feature"><span class="price-feature-icon">✓</span>🤖 AI Ride Planner (unlimited)</div>
+        <div class="price-feature"><span class="price-feature-icon">✓</span>Advanced scenic + elevation routing</div>
+        <div class="price-feature"><span class="price-feature-icon">✓</span>Group ride tools (unlimited)</div>
+        <div class="price-feature"><span class="price-feature-icon">✓</span>Premium fuel filter + price alerts</div>
+        <div class="price-feature"><span class="price-feature-icon">✓</span>Unlimited ride history</div>
+        <div class="price-feature"><span class="price-feature-icon">✓</span>Priority roadside assistance</div>
+        <div class="price-feature"><span class="price-feature-icon">✓</span>Custom route sharing pages</div>
+        <div class="price-feature"><span class="price-feature-icon">✓</span>Gamification + leaderboard</div>
+        <button class="btn-primary" style="width:100%;margin-top:1.5rem" onclick="showToast('🎉 Welcome to MotoIQ Pro!','🚀')">Upgrade to Pro</button>
+      </div>
+    </div>
+
+    <div style="text-align:center;margin-top:3rem">
+      <div class="section-label" style="margin-bottom:1rem">INCLUDED IN EVERY PLAN</div>
+      <div style="display:flex;flex-wrap:wrap;gap:1rem;justify-content:center">
+        <div class="glass-card" style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem 1.25rem;flex-direction:row">
+          <span>🔒</span><span style="font-size:0.85rem">End-to-end encryption</span>
+        </div>
+        <div class="glass-card" style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem 1.25rem;flex-direction:row">
+          <span>🌐</span><span style="font-size:0.85rem">Offline route access</span>
+        </div>
+        <div class="glass-card" style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem 1.25rem;flex-direction:row">
+          <span>📱</span><span style="font-size:0.85rem">Android + iOS app</span>
+        </div>
+        <div class="glass-card" style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem 1.25rem;flex-direction:row">
+          <span>🆘</span><span style="font-size:0.85rem">Emergency SOS (always free)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     PAGE 12: CONTACT / COMMUNITY
+══════════════════════════════════════ -->
+<div class="page" id="page-contact">
+  <div class="page-header">
+    <div class="section-label">COMMUNITY & CONTACT</div>
+    <div class="section-title">Join the ride. Be the tribe.</div>
+    <p class="text-muted" style="margin-top:0.5rem">42,000+ riders and growing. Be part of India's smartest riding community.</p>
+  </div>
+  <div class="section">
+    <div class="grid-2">
+      <div>
+        <div class="section-label" style="margin-bottom:1rem">JOIN THE COMMUNITY</div>
+        <div class="social-link" onclick="showToast('Opening Instagram...','📸')">
+          <div class="social-icon" style="background:linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045)">📸</div>
+          <div><div class="fw-bold">Instagram</div><div class="text-muted" style="font-size:0.8rem">@motoiq.india · 28K followers</div></div>
+          <span class="badge badge-orange" style="margin-left:auto">Follow</span>
+        </div>
+        <div class="social-link" onclick="showToast('Opening YouTube...','▶️')">
+          <div class="social-icon" style="background:rgba(255,0,0,0.2)">▶️</div>
+          <div><div class="fw-bold">YouTube</div><div class="text-muted" style="font-size:0.8rem">MotoIQ India · Route videos + tutorials</div></div>
+          <span class="badge badge-cyan" style="margin-left:auto">Subscribe</span>
+        </div>
+        <div class="social-link" onclick="showToast('Opening Discord...','💬')">
+          <div class="social-icon" style="background:rgba(88,101,242,0.2)">💬</div>
+          <div><div class="fw-bold">Discord</div><div class="text-muted" style="font-size:0.8rem">Active community · #route-planning</div></div>
+          <span class="badge badge-cyan" style="margin-left:auto">Join</span>
+        </div>
+        <div class="social-link" onclick="showToast('Opening WhatsApp group...','🟢')">
+          <div class="social-icon" style="background:rgba(37,211,102,0.15)">🟢</div>
+          <div><div class="fw-bold">WhatsApp Rider Groups</div><div class="text-muted" style="font-size:0.8rem">City-wise groups: Pune, Mumbai, Bangalore...</div></div>
+          <span class="badge badge-green" style="margin-left:auto">Join</span>
+        </div>
+
+        <div class="glass-card" style="margin-top:1.5rem;text-align:center;padding:2rem">
+          <div style="font-size:3rem;margin-bottom:0.75rem">🏍</div>
+          <div class="section-title" style="font-size:1.5rem;margin-bottom:0.5rem">42,000+ Riders</div>
+          <div class="text-muted" style="font-size:0.85rem">From Leh to Kanyakumari. From ghats to highways.</div>
+          <div style="margin-top:1rem;display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap">
+            <span class="badge badge-orange">Maharashtra</span>
+            <span class="badge badge-cyan">Karnataka</span>
+            <span class="badge badge-green">Goa</span>
+            <span class="badge badge-orange">Kerala</span>
+            <span class="badge badge-cyan">Rajasthan</span>
+            <span class="badge badge-yellow">Himachal</span>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="section-label" style="margin-bottom:1rem">SEND US A MESSAGE</div>
+        <div class="glass-card">
+          <div class="form-group">
+            <label class="form-label">YOUR NAME</label>
+            <input class="form-input" placeholder="e.g. Salaar">
+          </div>
+          <div class="form-group">
+            <label class="form-label">EMAIL</label>
+            <input class="form-input" type="email" placeholder="rider@example.com">
+          </div>
+          <div class="form-group">
+            <label class="form-label">SUBJECT</label>
+            <input class="form-input" placeholder="Feature request, bug report, partnership...">
+          </div>
+          <div class="form-group">
+            <label class="form-label">MESSAGE</label>
+            <textarea class="form-input" placeholder="Tell us what's on your mind..."></textarea>
+          </div>
+          <button class="btn-primary" style="width:100%" onclick="showToast('📨 Message sent! We\'ll reply within 24 hrs.','✅')">Send Message 🚀</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script src="script.js"></script>
+<!-- Google Maps API (Loaded sequentially after script.js defines initMap) -->
+<script defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDgJeP9aa3Zetv3dX3blMf3DLqT86be2qI&libraries=places&callback=initMap"></script>
+</body>
+</html>
